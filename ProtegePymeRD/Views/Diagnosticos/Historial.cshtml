@@ -1,0 +1,215 @@
+﻿@model IEnumerable<ProtegePymeRD.Models.Diagnostico>
+
+    @if (TempData["MensajeExito"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["MensajeExito"]
+    </div>
+}
+
+@{
+    ViewData["Title"] = "Historial ProtegeScore";
+
+    var empresa =
+        ViewBag.Empresa as ProtegePymeRD.Models.Empresa;
+
+    var ultimoDiagnostico = Model.FirstOrDefault();
+}
+
+<div class="d-flex flex-column flex-md-row
+            justify-content-between align-items-md-end
+            gap-3 mb-4">
+
+    <div>
+        <span class="text-success fw-semibold small">
+            EVOLUCIÓN DE SEGURIDAD
+        </span>
+
+        <h1 class="fw-bold mt-2 mb-2">
+            Historial ProtegeScore
+        </h1>
+
+        <p class="text-muted mb-0">
+            Empresa:
+            <strong class="text-dark">@empresa?.Nombre</strong>
+        </p>
+    </div>
+
+    <a asp-action="Create"
+       asp-route-empresaId="@empresa?.Id"
+       class="btn btn-success px-4">
+        Nueva evaluación
+    </a>
+</div>
+
+<div class="row g-3 mb-4">
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <p class="text-muted mb-2">
+                    ProtegeScore actual
+                </p>
+
+                @if (ultimoDiagnostico != null)
+                {
+                    <span class="display-6 fw-bold text-success">
+                        @ultimoDiagnostico.Puntuacion
+                    </span>
+
+                    <span class="text-muted">/ 100</span>
+                }
+                else
+                {
+                    <span class="display-6 fw-bold">--</span>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <p class="text-muted mb-2">
+                    Evaluaciones realizadas
+                </p>
+
+                <span class="display-6 fw-bold">
+                    @Model.Count()
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <p class="text-muted mb-2">
+                    Última evaluación
+                </p>
+
+                @if (ultimoDiagnostico != null)
+                {
+                    <span class="fs-4 fw-bold">
+                        @(ultimoDiagnostico.FechaEvaluacion.ToString("dd/MM/yyyy"))
+                    </span>
+                }
+                else
+                {
+                    <span class="fs-4 fw-bold">Pendiente</span>
+                }
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+
+        <h5 class="fw-bold mb-1">
+            Evaluaciones registradas
+        </h5>
+
+        <p class="text-muted mb-4">
+            Consulta los resultados obtenidos durante el piloto.
+        </p>
+
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Puntuación</th>
+                            <th>Nivel</th>
+                            <th>Evaluado por</th>
+                            <th class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var diagnostico in Model)
+                        {
+                            string color =
+                                diagnostico.Puntuacion >= 80
+                                    ? "success"
+                                    : diagnostico.Puntuacion >= 60
+                                        ? "warning"
+                                        : "danger";
+
+                            <tr>
+                                <td>
+                                @(diagnostico.FechaEvaluacion.ToString("dd/MM/yyyy hh:mm tt"))
+                                </td>
+
+                                <td>
+                                    <span class="fw-bold text-@color">
+                                        @diagnostico.Puntuacion
+                                    </span>
+                                    <span class="text-muted">/ 100</span>
+                                </td>
+
+                                <td>
+                                    <span class="badge bg-@color text-white">
+                                        @diagnostico.Nivel
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @diagnostico.UsuarioEvaluador
+                                </td>
+
+                                <td class="text-end text-nowrap">
+                                   <a asp-action="Resultado"
+                                      asp-route-id="@diagnostico.Id"
+                                      class="btn btn-sm btn-outline-success">
+                                       Ver resultado
+                                   </a>
+                               
+                                   <form asp-action="Eliminar"
+                                         asp-route-id="@diagnostico.Id"
+                                         method="post"
+                                         class="d-inline"
+                                         onsubmit="return confirm('¿Seguro que deseas eliminar esta evaluación?');">
+                               
+                                       <button type="submit"
+                                               class="btn btn-sm btn-outline-danger">
+                                           Eliminar
+                                       </button>
+                                   </form>
+                               </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <h5>No hay evaluaciones registradas</h5>
+
+                <p class="text-muted">
+                    Realiza el primer diagnóstico de esta empresa.
+                </p>
+
+                <a asp-action="Create"
+                   asp-route-empresaId="@empresa?.Id"
+                   class="btn btn-success">
+                    Iniciar diagnóstico
+                </a>
+            </div>
+        }
+
+    </div>
+</div>
+
+<div class="mt-4 mb-5">
+    <a asp-controller="Empresas"
+       asp-action="Index"
+       class="btn btn-light">
+        Volver a empresas
+    </a>
+</div>

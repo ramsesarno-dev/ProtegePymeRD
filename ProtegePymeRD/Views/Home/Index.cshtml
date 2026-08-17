@@ -1,0 +1,780 @@
+﻿@model ProtegePymeRD.ViewModels.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Panel principal";
+}
+
+<div class="d-flex flex-column flex-md-row
+            justify-content-between align-items-md-end
+            gap-3 mb-4">
+
+    <div>
+        <span class="text-success fw-semibold small">
+            PILOTO DE 90 DÍAS
+        </span>
+
+        <h1 class="fw-bold mt-2 mb-2">
+            Panel de continuidad
+        </h1>
+
+        <p class="text-muted mb-0">
+            Monitorea la seguridad y preparación de las
+            MIPYMES incorporadas.
+        </p>
+    </div>
+
+    <a asp-controller="Empresas"
+       asp-action="Create"
+       class="btn btn-success px-4">
+        Registrar empresa
+    </a>
+</div>
+
+@* Métricas principales *@
+<div class="row g-3 mb-4">
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+
+                <p class="text-muted mb-2">
+                    Empresas activas
+                </p>
+
+                <span class="display-6 fw-bold">
+                    @Model.EmpresasActivas
+                </span>
+
+                <div class="small text-success mt-2">
+                    De @Model.TotalEmpresas registradas
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+
+                <p class="text-muted mb-2">
+                    ProtegeScore promedio
+                </p>
+
+                @if (Model.ProtegeScorePromedio == 0)
+                {
+                    <span class="display-6 fw-bold">
+                        --
+                    </span>
+
+                    <div class="small text-muted mt-2">
+                        Sin evaluaciones
+                    </div>
+                }
+                else
+                {
+                    <span class="display-6 fw-bold">
+                        @Model.ProtegeScorePromedio
+                    </span>
+
+                    <span class="text-muted">
+                        / 100
+                    </span>
+                }
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+
+                <p class="text-muted mb-2">
+                    Evaluaciones pendientes
+                </p>
+
+                <span class="display-6 fw-bold text-warning">
+                    @Model.EvaluacionesPendientes
+                </span>
+
+                <div class="small text-muted mt-2">
+                    Requieren diagnóstico
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+
+                <p class="text-muted mb-2">
+                    Meta del piloto
+                </p>
+
+                <span class="display-6 fw-bold">
+                    @Model.TotalEmpresas
+                </span>
+
+                <span class="text-muted">
+                    / @Model.MetaPiloto
+                </span>
+
+                <div class="progress mt-3"
+                     style="height: 7px;">
+
+                    <div class="progress-bar bg-success"
+                         style="width: @Model.PorcentajePiloto%">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@* Métricas de ProtegeBackup *@
+<div class="row g-3 mb-4">
+
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+
+                <p class="text-muted mb-2">
+                    Respaldos exitosos
+                </p>
+
+                @if (Model.TotalRespaldos == 0)
+                {
+                    <span class="display-6 fw-bold">
+                        --
+                    </span>
+
+                    <div class="small text-muted mt-2">
+                        Sin respaldos registrados
+                    </div>
+                }
+                else
+                {
+                    <span class="display-6 fw-bold text-success">
+                        @Model.PorcentajeRespaldosExitosos%
+                    </span>
+
+                    <div class="small text-muted mt-2">
+                        Meta del servicio: más de 95%
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+
+                <p class="text-muted mb-2">
+                    Restauraciones verificadas
+                </p>
+
+                <span class="display-6 fw-bold">
+                    @Model.RestauracionesVerificadas
+                </span>
+
+                <div class="small text-muted mt-2">
+                    De @Model.TotalRespaldos
+                    @(Model.TotalRespaldos == 1
+                        ? "respaldo registrado"
+                        : "respaldos registrados")
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@* Métricas de ProtegeAccess *@
+<div class="row g-3 mb-4">
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <p class="text-muted mb-2">
+                    Cuentas críticas
+                </p>
+
+                <span class="display-6 fw-bold">
+                    @Model.TotalCuentasCriticas
+                </span>
+
+                <p class="text-muted mb-0">
+                    @Model.CuentasCriticasActivas
+                    @(Model.CuentasCriticasActivas == 1
+                        ? "cuenta activa"
+                        : "cuentas activas")
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <p class="text-muted mb-2">
+                    Cobertura MFA
+                </p>
+
+                @if (Model.CuentasCriticasActivas == 0)
+                {
+                    <span class="display-6 fw-bold">
+                        --
+                    </span>
+
+                    <p class="text-muted mb-0">
+                        Sin cuentas activas
+                    </p>
+                }
+                else
+                {
+                    <span class="display-6 fw-bold text-success">
+                        @Model.PorcentajeCoberturaMfa%
+                    </span>
+
+                    <p class="text-muted mb-0">
+                        @Model.CuentasConMfa de
+                        @Model.CuentasCriticasActivas cuentas activas
+                    </p>
+                }
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <p class="text-muted mb-2">
+                    Privilegios controlados
+                </p>
+
+                <span class="display-6 fw-bold">
+                    @Model.CuentasConMinimoPrivilegio
+                </span>
+
+                <p class="text-muted mb-0">
+                    Cumplen con mínimo privilegio
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@* Métricas de ProtegeAlert *@
+<div class="row g-3 mb-4">
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <p class="text-muted mb-2">
+                    Alertas registradas
+                </p>
+
+                <span class="display-6 fw-bold">
+                    @Model.TotalAlertas
+                </span>
+
+                <p class="text-muted mb-0">
+                    Riesgos detectados
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <p class="text-muted mb-2">
+                    Alertas pendientes
+                </p>
+
+                <span class="display-6 fw-bold text-warning">
+                    @Model.AlertasPendientes
+                </span>
+
+                <p class="text-muted mb-0">
+                    Requieren seguimiento
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <p class="text-muted mb-2">
+                    Críticas abiertas
+                </p>
+
+                <span class="display-6 fw-bold text-danger">
+                    @Model.AlertasCriticasAbiertas
+                </span>
+
+                <p class="text-muted mb-0">
+                    Requieren atención inmediata
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <p class="text-muted mb-2">
+                    Resolución de alertas
+                </p>
+
+                @if (Model.TotalAlertas == 0)
+                {
+                    <span class="display-6 fw-bold">
+                        --
+                    </span>
+
+                    <p class="text-muted mb-0">
+                        Sin alertas registradas
+                    </p>
+                }
+                else
+                {
+                    <span class="display-6 fw-bold text-success">
+                        @Model.PorcentajeAlertasResueltas%
+                    </span>
+
+                    <p class="text-muted mb-0">
+                        @Model.AlertasResueltas de
+                        @Model.TotalAlertas resueltas
+                    </p>
+                }
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@* Métricas de ProtegeHuman *@
+<div class="row g-3 mb-4">
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <p class="text-muted mb-2">
+                    Capacitaciones
+                </p>
+
+                <span class="display-6 fw-bold">
+                    @Model.TotalCapacitaciones
+                </span>
+
+                <p class="text-muted mb-0 mt-2">
+                    Actividades programadas
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <p class="text-muted mb-2">
+                    Capacitaciones pendientes
+                </p>
+
+                <span class="display-6 fw-bold text-warning">
+                    @Model.CapacitacionesPendientes
+                </span>
+
+                <p class="text-muted mb-0 mt-2">
+                    Requieren seguimiento
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <p class="text-muted mb-2">
+                    Capacitaciones completadas
+                </p>
+
+                <span class="display-6 fw-bold text-success">
+                    @Model.CapacitacionesCompletadas
+                </span>
+
+                <p class="text-muted mb-0 mt-2">
+                    @Model.ParticipantesCapacitados
+                    @(Model.ParticipantesCapacitados == 1
+                        ? "participante capacitado"
+                        : "participantes capacitados")
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <p class="text-muted mb-2">
+                    Aprobación ProtegeHuman
+                </p>
+
+                @if (Model.ParticipantesCapacitados == 0)
+                {
+                    <span class="display-6 fw-bold">
+                        --
+                    </span>
+
+                    <p class="text-muted mb-0 mt-2">
+                        Sin resultados
+                    </p>
+                }
+                else
+                {
+                    <span class="display-6 fw-bold text-success">
+                        @Model.PorcentajeAprobacionCapacitaciones%
+                    </span>
+
+                    <p class="text-muted mb-0 mt-2">
+                        @Model.ParticipantesAprobados de
+                        @Model.ParticipantesCapacitados aprobados
+                    </p>
+                }
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@* Métricas del Plan de Continuidad *@
+<div class="row g-3 mb-4">
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <p class="text-muted mb-2">
+                    Planes de continuidad
+                </p>
+
+                <span class="display-6 fw-bold">
+                    @Model.TotalPlanesContinuidad
+                </span>
+
+                <p class="text-muted mb-0 mt-2">
+                    Planes registrados
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <p class="text-muted mb-2">
+                    Planes activos
+                </p>
+
+                <span class="display-6 fw-bold text-success">
+                    @Model.PlanesActivos
+                </span>
+
+                <p class="text-muted mb-0 mt-2">
+                    Preparados para ejecutarse
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <p class="text-muted mb-2">
+                    Planes probados
+                </p>
+
+                @if (Model.TotalPlanesContinuidad == 0)
+                {
+                    <span class="display-6 fw-bold">
+                        --
+                    </span>
+
+                    <p class="text-muted mb-0 mt-2">
+                        Sin planes registrados
+                    </p>
+                }
+                else
+                {
+                    <span class="display-6 fw-bold text-success">
+                        @Model.PorcentajePlanesProbados%
+                    </span>
+
+                    <p class="text-muted mb-0 mt-2">
+                        @Model.PlanesProbados de
+                        @Model.TotalPlanesContinuidad verificados
+                    </p>
+                }
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <p class="text-muted mb-2">
+                    Revisiones pendientes
+                </p>
+
+                <span class="display-6 fw-bold
+                    @(Model.PlanesRequierenRevision > 0
+                        ? "text-danger"
+                        : "text-success")">
+                    @Model.PlanesRequierenRevision
+                </span>
+
+                <p class="text-muted mb-0 mt-2">
+                    @(Model.PlanesRequierenRevision == 0
+                        ? "Todos los planes están vigentes"
+                        : "Requieren actualización")
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@* Empresas y servicios *@
+<div class="row g-4">
+
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <div class="d-flex justify-content-between
+                            align-items-start mb-4">
+
+                    <div>
+                        <h5 class="fw-bold mb-1">
+                            Empresas incorporadas
+                        </h5>
+
+                        <p class="text-muted mb-0">
+                            Seguimiento reciente del piloto.
+                        </p>
+                    </div>
+
+                    <a asp-controller="Empresas"
+                       asp-action="Index"
+                       class="btn btn-sm btn-outline-success">
+                        Ver todas
+                    </a>
+
+                </div>
+
+                @if (Model.EmpresasRecientes.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Empresa</th>
+                                    <th>Plan</th>
+                                    <th>ProtegeScore</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var empresa in Model.EmpresasRecientes)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>
+                                                @empresa.Nombre
+                                            </strong>
+
+                                            <div class="small text-muted">
+                                                @empresa.Sector
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <span class="badge bg-light
+                                                         text-dark border">
+                                                @empresa.Plan
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            @if (empresa.ProtegeScore == 0)
+                                            {
+                                                <span class="badge
+                                                             bg-secondary
+                                                             text-white">
+                                                    Pendiente
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <strong>
+                                                    @empresa.ProtegeScore / 100
+                                                </strong>
+                                            }
+                                        </td>
+
+                                        <td>
+                                            @if (empresa.Activa)
+                                            {
+                                                <span class="text-success
+                                                             fw-semibold">
+                                                    Activa
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">
+                                                    Inactiva
+                                                </span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+
+                        <h5>
+                            No hay empresas registradas
+                        </h5>
+
+                        <p class="text-muted">
+                            Registra la primera MIPYME del piloto.
+                        </p>
+
+                        <a asp-controller="Empresas"
+                           asp-action="Create"
+                           class="btn btn-success mt-2">
+                            Registrar empresa
+                        </a>
+
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <h5 class="fw-bold">
+                    Servicios ProtegePyme
+                </h5>
+
+                <p class="text-muted">
+                    Prevenir, continuar y recuperar.
+                </p>
+
+                <div class="border rounded p-3 mb-3">
+                    <strong>
+                        ProtegeScore
+                    </strong>
+
+                    <div class="small text-muted">
+                        Diagnóstico y evolución.
+                    </div>
+                </div>
+
+                <div class="border rounded p-3 mb-3">
+                    <strong>
+                        ProtegeBackup
+                    </strong>
+
+                    <div class="small text-muted">
+                        Respaldos y restauraciones.
+                    </div>
+                </div>
+
+                <div class="border rounded p-3 mb-3">
+                    <strong>
+                        ProtegeAccess
+                    </strong>
+
+                    <div class="small text-muted">
+                        MFA, cuentas y privilegios.
+                    </div>
+                </div>
+
+                <div class="border rounded p-3 mb-3">
+                    <strong>
+                        ProtegeAlert
+                    </strong>
+
+                    <div class="small text-muted">
+                        Alertas, incidentes y seguimiento.
+                    </div>
+                </div>
+
+                <div class="border rounded p-3">
+                    <strong>
+                        ProtegeHuman
+                    </strong>
+
+                    <div class="small text-muted">
+                        Capacitación y concientización.
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>

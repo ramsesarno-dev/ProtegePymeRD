@@ -1,0 +1,257 @@
+﻿@model IEnumerable<ProtegePymeRD.Models.CuentaCritica>
+
+@{
+    ViewData["Title"] = "ProtegeAccess";
+
+    var empresa =
+        ViewBag.Empresa as ProtegePymeRD.Models.Empresa;
+
+    var cuentas = Model.ToList();
+    var cuentasActivas = cuentas.Where(cuenta => cuenta.Activa).ToList();
+    var cuentasConMfa = cuentasActivas.Count(cuenta => cuenta.TieneMfa);
+
+    var porcentajeMfa = cuentasActivas.Count > 0
+        ? (int)Math.Round(cuentasConMfa * 100.0 / cuentasActivas.Count)
+        : 0;
+
+    var minimoPrivilegio = cuentasActivas.Count(
+        cuenta => cuenta.CumpleMinimoPrivilegio);
+}
+
+@if (TempData["MensajeExito"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["MensajeExito"]
+    </div>
+}
+
+<div class="d-flex flex-column flex-md-row
+            justify-content-between align-items-md-end
+            gap-3 mb-4">
+
+    <div>
+        <span class="text-success fw-semibold small">
+            PROTEGEACCESS
+        </span>
+
+        <h1 class="fw-bold mt-2 mb-2">
+            Cuentas y accesos críticos
+        </h1>
+
+        <p class="text-muted mb-0">
+            Empresa:
+            <strong class="text-dark">@empresa?.Nombre</strong>
+        </p>
+    </div>
+
+    <a asp-action="Create"
+       asp-route-empresaId="@empresa?.Id"
+       class="btn btn-success px-4">
+        Registrar cuenta
+    </a>
+</div>
+
+<div class="row g-3 mb-4">
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+                <p class="text-muted mb-2">
+                    Cuentas registradas
+                </p>
+
+                <span class="display-6 fw-bold">
+                    @cuentas.Count
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+                <p class="text-muted mb-2">
+                    Cobertura MFA
+                </p>
+
+                <span class="display-6 fw-bold text-success">
+                    @porcentajeMfa%
+                </span>
+
+                <p class="text-muted mb-0">
+                    @cuentasConMfa de @cuentasActivas.Count cuentas activas
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+                <p class="text-muted mb-2">
+                    Mínimo privilegio
+                </p>
+
+                <span class="display-6 fw-bold">
+                    @minimoPrivilegio
+                </span>
+
+                <p class="text-muted mb-0">
+                    Cuentas con permisos controlados
+                </p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+
+        <h4 class="fw-bold mb-1">
+            Inventario de accesos
+        </h4>
+
+        <p class="text-muted mb-4">
+            Controla servicios, privilegios, MFA y responsables.
+        </p>
+
+        @if (cuentas.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Servicio y usuario</th>
+                            <th>Categoría</th>
+                            <th>Privilegio</th>
+                            <th>MFA</th>
+                            <th>Mínimo privilegio</th>
+                            <th>Estado</th>
+                            <th>Última revisión</th>
+                            <th class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var cuenta in cuentas)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>
+                                        @cuenta.NombreServicio
+                                    </strong>
+
+                                    <div class="text-muted small">
+                                        @cuenta.UsuarioCorreo
+                                    </div>
+                                </td>
+
+                                <td>
+                                    @cuenta.Categoria
+                                </td>
+
+                                <td>
+                                    @cuenta.NivelPrivilegio
+                                </td>
+
+                                <td>
+                                    @if (cuenta.TieneMfa)
+                                    {
+                                        <span class="badge bg-success">
+                                            Protegida
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">
+                                            Sin MFA
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+                                    @if (cuenta.CumpleMinimoPrivilegio)
+                                    {
+                                        <span class="text-success">
+                                            Cumple
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger">
+                                            Revisar
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+                                    @if (cuenta.Activa)
+                                    {
+                                        <span class="text-success">
+                                            Activa
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            Inactiva
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+                                    @cuenta.FechaRevision.ToString("dd/MM/yyyy")
+
+                                    <div class="text-muted small">
+                                        @cuenta.Responsable
+                                    </div>
+                                </td>
+
+                                <td class="text-end">
+                                    <form asp-action="Eliminar"
+                                          asp-route-id="@cuenta.Id"
+                                          method="post"
+                                          class="d-inline"
+                                          onsubmit="return confirm('¿Seguro que deseas eliminar esta cuenta?');">
+
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-danger">
+                                            Eliminar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <h5>No hay cuentas críticas registradas</h5>
+
+                <p class="text-muted">
+                    Registra los accesos administrativos y servicios
+                    importantes de esta empresa.
+                </p>
+
+                <a asp-action="Create"
+                   asp-route-empresaId="@empresa?.Id"
+                   class="btn btn-success">
+                    Registrar primera cuenta
+                </a>
+            </div>
+        }
+
+    </div>
+</div>
+
+<div class="mt-4 mb-5">
+    <a asp-controller="Empresas"
+       asp-action="Index"
+       class="btn btn-light">
+        Volver a empresas
+    </a>
+</div>

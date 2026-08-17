@@ -1,0 +1,293 @@
+﻿@using ProtegePymeRD.Models
+@model IEnumerable<CapacitacionSeguridad>
+
+@{
+    ViewData["Title"] = "ProtegeHuman";
+
+    var empresa = ViewBag.Empresa as Empresa;
+    var capacitaciones = Model.ToList();
+
+    var pendientes = capacitaciones.Count(capacitacion =>
+        capacitacion.Estado == EstadoCapacitacion.Programada ||
+        capacitacion.Estado == EstadoCapacitacion.EnCurso);
+
+    var completadas = capacitaciones.Count(capacitacion =>
+        capacitacion.Estado == EstadoCapacitacion.Completada);
+
+    var participantes = capacitaciones
+        .Where(capacitacion =>
+            capacitacion.Estado == EstadoCapacitacion.Completada)
+        .Sum(capacitacion =>
+            capacitacion.CantidadParticipantes);
+
+    var aprobados = capacitaciones
+        .Where(capacitacion =>
+            capacitacion.Estado == EstadoCapacitacion.Completada)
+        .Sum(capacitacion =>
+            capacitacion.CantidadAprobados);
+
+    var porcentajeAprobacion = participantes > 0
+        ? Math.Min(
+            (int)Math.Round(aprobados * 100.0 / participantes),
+            100)
+        : 0;
+}
+
+@if (TempData["MensajeExito"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["MensajeExito"]
+    </div>
+}
+
+<div class="d-flex flex-column flex-md-row
+            justify-content-between align-items-md-end
+            gap-3 mb-4">
+
+    <div>
+        <span class="text-success fw-semibold small">
+            PROTEGEHUMAN
+        </span>
+
+        <h1 class="fw-bold mt-2 mb-2">
+            Capacitación y concientización
+        </h1>
+
+        <p class="text-muted mb-0">
+            Empresa:
+            <strong class="text-dark">@empresa?.Nombre</strong>
+        </p>
+    </div>
+
+    <a asp-action="Create"
+       asp-route-empresaId="@empresa?.Id"
+       class="btn btn-success px-4">
+        Programar capacitación
+    </a>
+</div>
+
+<div class="row g-3 mb-4">
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <p class="text-muted mb-2">Capacitaciones</p>
+
+                <span class="display-6 fw-bold">
+                    @capacitaciones.Count
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <p class="text-muted mb-2">Pendientes</p>
+
+                <span class="display-6 fw-bold text-warning">
+                    @pendientes
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <p class="text-muted mb-2">Completadas</p>
+
+                <span class="display-6 fw-bold text-success">
+                    @completadas
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <p class="text-muted mb-2">Aprobación</p>
+
+                @if (participantes == 0)
+                {
+                    <span class="display-6 fw-bold">--</span>
+
+                    <div class="small text-muted">
+                        Sin resultados
+                    </div>
+                }
+                else
+                {
+                    <span class="display-6 fw-bold text-success">
+                        @porcentajeAprobacion%
+                    </span>
+
+                    <div class="small text-muted">
+                        @aprobados de @participantes participantes
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+
+        <h4 class="fw-bold mb-1">
+            Actividades formativas
+        </h4>
+
+        <p class="text-muted mb-4">
+            Seguimiento de capacitaciones y resultados.
+        </p>
+
+        @if (capacitaciones.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Capacitación</th>
+                            <th>Tema</th>
+                            <th>Estado</th>
+                            <th>Programada</th>
+                            <th>Duración</th>
+                            <th>Participantes</th>
+                            <th>Aprobación</th>
+                            <th class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var capacitacion in capacitaciones)
+                        {
+                            string colorEstado =
+                                capacitacion.Estado switch
+                                {
+                                    EstadoCapacitacion.Completada =>
+                                        "success",
+
+                                    EstadoCapacitacion.EnCurso =>
+                                        "primary",
+
+                                    EstadoCapacitacion.Cancelada =>
+                                        "secondary",
+
+                                    _ => "warning"
+                                };
+
+                            string textoEstado =
+                                capacitacion.Estado switch
+                                {
+                                    EstadoCapacitacion.EnCurso =>
+                                        "En curso",
+
+                                    _ => capacitacion.Estado.ToString()
+                                };
+
+                            <tr>
+                                <td>
+                                    <strong>
+                                        @capacitacion.Titulo
+                                    </strong>
+
+                                    <div class="small text-muted">
+                                        @capacitacion.Descripcion
+                                    </div>
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(
+                                        _ => capacitacion.Tema)
+                                </td>
+
+                                <td>
+                                    <span class="badge bg-@colorEstado">
+                                        @textoEstado
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @capacitacion.FechaProgramada.ToString(
+                                        "dd/MM/yyyy hh:mm tt")
+                                </td>
+
+                                <td>
+                                    @capacitacion.DuracionMinutos min
+                                </td>
+
+                                <td>
+                                    @capacitacion.CantidadParticipantes
+                                </td>
+
+                                <td>
+                                    @if (capacitacion.Estado ==
+                                        EstadoCapacitacion.Completada)
+                                    {
+                                        <strong class="text-success">
+                                            @capacitacion.PorcentajeAprobacion%
+                                        </strong>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            Pendiente
+                                        </span>
+                                    }
+                                </td>
+
+                                <td class="text-end text-nowrap">
+                                    <a asp-action="Completar"
+                                       asp-route-id="@capacitacion.Id"
+                                       class="btn btn-sm btn-outline-success">
+                                        Seguimiento
+                                    </a>
+
+                                    <form asp-action="Eliminar"
+                                          asp-route-id="@capacitacion.Id"
+                                          method="post"
+                                          class="d-inline"
+                                          onsubmit="return confirm('¿Seguro que deseas eliminar esta capacitación?');">
+
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-danger">
+                                            Eliminar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <h5>No hay capacitaciones programadas</h5>
+
+                <p class="text-muted">
+                    Programa la primera actividad de concientización.
+                </p>
+
+                <a asp-action="Create"
+                   asp-route-empresaId="@empresa?.Id"
+                   class="btn btn-success">
+                    Programar primera capacitación
+                </a>
+            </div>
+        }
+
+    </div>
+</div>
+
+<div class="mt-4 mb-5">
+    <a asp-controller="Empresas"
+       asp-action="Index"
+       class="btn btn-light">
+        Volver a empresas
+    </a>
+</div>

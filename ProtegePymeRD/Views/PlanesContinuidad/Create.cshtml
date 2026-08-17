@@ -1,0 +1,310 @@
+﻿@using ProtegePymeRD.Models
+@model PlanContinuidadDigital
+
+@{
+    ViewData["Title"] = "Crear plan de continuidad";
+
+    var empresa = ViewBag.Empresa as Empresa;
+}
+
+<div class="row justify-content-center">
+    <div class="col-xl-10">
+
+        <div class="mb-4">
+            <span class="text-success fw-semibold small">
+                CONTINUIDAD DIGITAL
+            </span>
+
+            <h1 class="fw-bold mt-2 mb-2">
+                Crear plan de continuidad
+            </h1>
+
+            <p class="text-muted mb-1">
+                Empresa:
+                <strong class="text-dark">
+                    @empresa?.Nombre
+                </strong>
+            </p>
+
+            <p class="text-muted">
+                Define cómo responder y recuperar las operaciones
+                ante un incidente o interrupción.
+            </p>
+        </div>
+
+        <form asp-action="Create" method="post">
+
+            <input asp-for="EmpresaId" type="hidden" />
+
+            <div asp-validation-summary="ModelOnly"
+                 class="alert alert-danger">
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+
+                    <h4 class="fw-bold mb-1">
+                        Información general
+                    </h4>
+
+                    <p class="text-muted mb-4">
+                        Identifica el plan y sus responsables.
+                    </p>
+
+                    <div class="mb-3">
+                        <label asp-for="Nombre"
+                               class="form-label">
+                        </label>
+
+                        <input asp-for="Nombre"
+                               class="form-control" />
+
+                        <span asp-validation-for="Nombre"
+                              class="text-danger">
+                        </span>
+                    </div>
+
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <label asp-for="Estado"
+                                   class="form-label">
+                            </label>
+
+                            <select asp-for="Estado"
+                                    asp-items="Html.GetEnumSelectList<EstadoPlanContinuidad>()"
+                                    class="form-select">
+                            </select>
+
+                            <span asp-validation-for="Estado"
+                                  class="text-danger">
+                            </span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="ProximaRevision"
+                                   class="form-label">
+                            </label>
+
+                            <input asp-for="ProximaRevision"
+                                   asp-format="{0:yyyy-MM-dd}"
+                                   type="date"
+                                   class="form-control" />
+
+                            <span asp-validation-for="ProximaRevision"
+                                  class="text-danger">
+                            </span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Responsable"
+                                   class="form-label">
+                            </label>
+
+                            <input asp-for="Responsable"
+                                   class="form-control"
+                                   placeholder="Ejemplo: Administrador de TI" />
+
+                            <span asp-validation-for="Responsable"
+                                  class="text-danger">
+                            </span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="ContactoEmergencia"
+                                   class="form-label">
+                            </label>
+
+                            <input asp-for="ContactoEmergencia"
+                                   class="form-control"
+                                   placeholder="Nombre, teléfono o correo" />
+
+                            <span asp-validation-for="ContactoEmergencia"
+                                  class="text-danger">
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+
+                    <h4 class="fw-bold mb-1">
+                        Objetivos de recuperación
+                    </h4>
+
+                    <p class="text-muted mb-4">
+                        Establece cuánto tiempo puede permanecer
+                        detenida la empresa y cuántos datos puede perder.
+                    </p>
+
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <label asp-for="RtoHoras"
+                                   class="form-label">
+                            </label>
+
+                            <input asp-for="RtoHoras"
+                                   type="number"
+                                   min="1"
+                                   max="168"
+                                   class="form-control" />
+
+                            <div class="form-text">
+                                Horas máximas para recuperar las operaciones.
+                            </div>
+
+                            <span asp-validation-for="RtoHoras"
+                                  class="text-danger">
+                            </span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="RpoHoras"
+                                   class="form-label">
+                            </label>
+
+                            <input asp-for="RpoHoras"
+                                   type="number"
+                                   min="0"
+                                   max="168"
+                                   class="form-control" />
+
+                            <div class="form-text">
+                                Horas de información que podrían perderse.
+                            </div>
+
+                            <span asp-validation-for="RpoHoras"
+                                  class="text-danger">
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <div class="mt-3">
+                        <label asp-for="SistemasCriticos"
+                               class="form-label">
+                        </label>
+
+                        <textarea asp-for="SistemasCriticos"
+                                  rows="5"
+                                  class="form-control"
+                                  placeholder="Ejemplo: facturación, contabilidad, correo empresarial y archivos de clientes.">
+                        </textarea>
+
+                        <span asp-validation-for="SistemasCriticos"
+                              class="text-danger">
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+
+                    <h4 class="fw-bold mb-1">
+                        Procedimientos
+                    </h4>
+
+                    <p class="text-muted mb-4">
+                        Describe las acciones que deberá ejecutar la empresa.
+                    </p>
+
+                    <div class="mb-4">
+                        <label asp-for="ProcedimientoRespuesta"
+                               class="form-label">
+                        </label>
+
+                        <textarea asp-for="ProcedimientoRespuesta"
+                                  rows="5"
+                                  class="form-control"
+                                  placeholder="Describe cómo detectar, reportar, contener y analizar el incidente.">
+                        </textarea>
+
+                        <span asp-validation-for="ProcedimientoRespuesta"
+                              class="text-danger">
+                        </span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="ProcedimientoRecuperacion"
+                               class="form-label">
+                        </label>
+
+                        <textarea asp-for="ProcedimientoRecuperacion"
+                                  rows="5"
+                                  class="form-control"
+                                  placeholder="Describe cómo restaurar respaldos, sistemas y operaciones.">
+                        </textarea>
+
+                        <span asp-validation-for="ProcedimientoRecuperacion"
+                              class="text-danger">
+                        </span>
+                    </div>
+
+                    <div>
+                        <label asp-for="PlanComunicacion"
+                               class="form-label">
+                        </label>
+
+                        <textarea asp-for="PlanComunicacion"
+                                  rows="5"
+                                  class="form-control"
+                                  placeholder="Indica quién notificará a empleados, clientes, proveedores y autoridades.">
+                        </textarea>
+
+                        <span asp-validation-for="PlanComunicacion"
+                              class="text-danger">
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+
+                    <label asp-for="Observaciones"
+                           class="form-label">
+                    </label>
+
+                    <textarea asp-for="Observaciones"
+                              rows="4"
+                              class="form-control">
+                    </textarea>
+
+                    <span asp-validation-for="Observaciones"
+                          class="text-danger">
+                    </span>
+
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mb-5">
+
+                <a asp-action="Index"
+                   asp-route-empresaId="@Model.EmpresaId"
+                   class="btn btn-light px-4">
+                    Cancelar
+                </a>
+
+                <button type="submit"
+                        class="btn btn-success px-4">
+                    Guardar plan
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

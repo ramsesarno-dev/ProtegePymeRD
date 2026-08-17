@@ -1,0 +1,403 @@
+﻿@model ProtegePymeRD.Models.Empresa
+
+@{
+    ViewData["Title"] = "Perfil de empresa";
+
+    bool esAdministrador =
+        User.IsInRole("Administrador");
+}
+
+<div class="d-flex flex-column flex-md-row
+            justify-content-between align-items-md-end
+            gap-3 mb-4">
+
+    <div>
+        <span class="text-success fw-semibold small">
+            PERFIL DE EMPRESA
+        </span>
+
+        <h1 class="fw-bold mt-2 mb-2">
+            @Model.Nombre
+        </h1>
+
+        <p class="text-muted mb-0">
+            Información general, seguridad y continuidad digital.
+        </p>
+    </div>
+
+    <div class="d-flex gap-2">
+
+        <a asp-action="Index"
+           class="btn btn-light px-4">
+            Volver
+        </a>
+
+        @if (esAdministrador)
+        {
+            <a asp-action="Edit"
+               asp-route-id="@Model.Id"
+               class="btn btn-success px-4">
+                Editar empresa
+            </a>
+        }
+
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <p class="text-muted mb-2">
+                    ProtegeScore
+                </p>
+
+                @if (Model.ProtegeScore == 0)
+                {
+                    <span class="fs-3 fw-bold text-warning">
+                        Pendiente
+                    </span>
+
+                    <p class="text-muted mb-0 mt-2">
+                        Requiere diagnóstico
+                    </p>
+                }
+                else
+                {
+                    <span class="display-6 fw-bold text-success">
+                        @Model.ProtegeScore
+                    </span>
+
+                    <span class="text-muted">
+                        / 100
+                    </span>
+
+                    <p class="text-muted mb-0 mt-2">
+                        Última puntuación registrada
+                    </p>
+                }
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <p class="text-muted mb-2">
+                    Plan contratado
+                </p>
+
+                <span class="fs-3 fw-bold">
+                    @Model.Plan
+                </span>
+
+                <p class="text-muted mb-0 mt-2">
+                    Servicio actual
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <p class="text-muted mb-2">
+                    Empleados
+                </p>
+
+                <span class="display-6 fw-bold">
+                    @Model.CantidadEmpleados
+                </span>
+
+                <p class="text-muted mb-0 mt-2">
+                    Personal registrado
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <p class="text-muted mb-2">
+                    Estado
+                </p>
+
+                @if (Model.Activa)
+                {
+                    <span class="badge bg-success fs-6">
+                        Activa
+                    </span>
+
+                    <p class="text-muted mb-0 mt-3">
+                        Empresa operativa
+                    </p>
+                }
+                else
+                {
+                    <span class="badge bg-secondary fs-6">
+                        Inactiva
+                    </span>
+
+                    <p class="text-muted mb-0 mt-3">
+                        Empresa no operativa
+                    </p>
+                }
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row g-4 mb-5">
+
+    <div class="col-lg-5">
+
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <h4 class="fw-bold mb-1">
+                    Información general
+                </h4>
+
+                <p class="text-muted mb-4">
+                    Datos comerciales y de contacto.
+                </p>
+
+                <div class="mb-3">
+                    <p class="text-muted small mb-1">
+                        Nombre comercial
+                    </p>
+
+                    <p class="fw-semibold mb-0">
+                        @Model.Nombre
+                    </p>
+                </div>
+
+                <div class="mb-3">
+                    <p class="text-muted small mb-1">
+                        RNC o cédula
+                    </p>
+
+                    <p class="fw-semibold mb-0">
+                        @Model.Rnc
+                    </p>
+                </div>
+
+                <div class="mb-3">
+                    <p class="text-muted small mb-1">
+                        Sector empresarial
+                    </p>
+
+                    <p class="fw-semibold mb-0">
+                        @Model.Sector
+                    </p>
+                </div>
+
+                <div class="mb-3">
+                    <p class="text-muted small mb-1">
+                        Correo de contacto
+                    </p>
+
+                    <a href="mailto:@Model.CorreoContacto"
+                       class="text-decoration-none">
+                        @Model.CorreoContacto
+                    </a>
+                </div>
+
+                <div class="mb-3">
+                    <p class="text-muted small mb-1">
+                        Teléfono
+                    </p>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.Telefono))
+                    {
+                        <a href="tel:@Model.Telefono"
+                           class="text-decoration-none">
+                            @Model.Telefono
+                        </a>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">
+                            No registrado
+                        </p>
+                    }
+                </div>
+
+                <div>
+                    <p class="text-muted small mb-1">
+                        Fecha de incorporación
+                    </p>
+
+                    <p class="fw-semibold mb-0">
+                        @(Model.FechaRegistro.ToString("dd/MM/yyyy"))
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-lg-7">
+
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <h4 class="fw-bold mb-1">
+                    Servicios de protección
+                </h4>
+
+                <p class="text-muted mb-4">
+                    Accede a los módulos asociados con esta empresa.
+                </p>
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <a asp-controller="Diagnosticos"
+                           asp-action="Historial"
+                           asp-route-empresaId="@Model.Id"
+                           class="card border text-decoration-none
+                                  text-dark h-100">
+
+                            <div class="card-body">
+                                <h5 class="fw-bold">
+                                    ProtegeScore
+                                </h5>
+
+                                <p class="text-muted mb-0">
+                                    Diagnósticos y evolución de seguridad.
+                                </p>
+                            </div>
+
+                        </a>
+                    </div>
+
+                    <div class="col-md-6">
+                        <a asp-controller="Respaldos"
+                           asp-action="Index"
+                           asp-route-empresaId="@Model.Id"
+                           class="card border text-decoration-none
+                                  text-dark h-100">
+
+                            <div class="card-body">
+                                <h5 class="fw-bold">
+                                    ProtegeBackup
+                                </h5>
+
+                                <p class="text-muted mb-0">
+                                    Respaldos y restauraciones.
+                                </p>
+                            </div>
+
+                        </a>
+                    </div>
+
+                    <div class="col-md-6">
+                        <a asp-controller="CuentasCriticas"
+                           asp-action="Index"
+                           asp-route-empresaId="@Model.Id"
+                           class="card border text-decoration-none
+                                  text-dark h-100">
+
+                            <div class="card-body">
+                                <h5 class="fw-bold">
+                                    ProtegeAccess
+                                </h5>
+
+                                <p class="text-muted mb-0">
+                                    Cuentas críticas, MFA y privilegios.
+                                </p>
+                            </div>
+
+                        </a>
+                    </div>
+
+                    <div class="col-md-6">
+                        <a asp-controller="AlertasSeguridad"
+                           asp-action="Index"
+                           asp-route-empresaId="@Model.Id"
+                           class="card border text-decoration-none
+                                  text-dark h-100">
+
+                            <div class="card-body">
+                                <h5 class="fw-bold">
+                                    ProtegeAlert
+                                </h5>
+
+                                <p class="text-muted mb-0">
+                                    Alertas, incidentes y seguimiento.
+                                </p>
+                            </div>
+
+                        </a>
+                    </div>
+
+                    <div class="col-md-6">
+                        <a asp-controller="CapacitacionesSeguridad"
+                           asp-action="Index"
+                           asp-route-empresaId="@Model.Id"
+                           class="card border text-decoration-none
+                                  text-dark h-100">
+
+                            <div class="card-body">
+                                <h5 class="fw-bold">
+                                    ProtegeHuman
+                                </h5>
+
+                                <p class="text-muted mb-0">
+                                    Capacitación y concientización.
+                                </p>
+                            </div>
+
+                        </a>
+                    </div>
+
+                    <div class="col-md-6">
+                        <a asp-controller="PlanesContinuidad"
+                           asp-action="Index"
+                           asp-route-empresaId="@Model.Id"
+                           class="card border text-decoration-none
+                                  text-dark h-100">
+
+                            <div class="card-body">
+                                <h5 class="fw-bold">
+                                    Continuidad digital
+                                </h5>
+
+                                <p class="text-muted mb-0">
+                                    Respuesta y recuperación operativa.
+                                </p>
+                            </div>
+
+                        </a>
+                    </div>
+
+                </div>
+
+                <div class="mt-4">
+                    <a asp-controller="Diagnosticos"
+                       asp-action="Create"
+                       asp-route-empresaId="@Model.Id"
+                       class="btn btn-success">
+                        Realizar nuevo diagnóstico
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>

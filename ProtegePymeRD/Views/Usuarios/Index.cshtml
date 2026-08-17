@@ -1,0 +1,279 @@
+﻿@using ProtegePymeRD.ViewModels
+@model IEnumerable<UsuarioListaViewModel>
+
+@{
+    ViewData["Title"] = "Administración de usuarios";
+
+    int totalUsuarios = Model.Count();
+
+    int administradores = Model.Count(usuario =>
+        usuario.Rol.Contains("Administrador"));
+
+    int analistas = Model.Count(usuario =>
+        usuario.Rol.Contains("Analista"));
+}
+
+@if (TempData["MensajeExito"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["MensajeExito"]
+    </div>
+}
+
+@if (TempData["MensajeAdvertencia"] != null)
+{
+    <div class="alert alert-warning">
+        @TempData["MensajeAdvertencia"]
+    </div>
+}
+
+<div class="d-flex flex-column flex-md-row
+            justify-content-between align-items-md-end
+            gap-3 mb-4">
+
+    <div>
+        <span class="text-success fw-semibold small">
+            CONTROL DE ACCESO
+        </span>
+
+        <h1 class="fw-bold mt-2 mb-2">
+            Usuarios
+        </h1>
+
+        <p class="text-muted mb-0">
+            Administra las cuentas y permisos de acceso
+            a ProtegePyme RD.
+        </p>
+    </div>
+
+    <a asp-action="Create"
+       class="btn btn-success px-4">
+        Nuevo usuario
+    </a>
+</div>
+
+<div class="row g-3 mb-4">
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <p class="text-muted mb-2">
+                    Total de usuarios
+                </p>
+
+                <span class="display-6 fw-bold">
+                    @totalUsuarios
+                </span>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <p class="text-muted mb-2">
+                    Administradores
+                </p>
+
+                <span class="display-6 fw-bold text-success">
+                    @administradores
+                </span>
+
+                <p class="text-muted mb-0 mt-2">
+                    Acceso completo
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <p class="text-muted mb-2">
+                    Analistas
+                </p>
+
+                <span class="display-6 fw-bold text-primary">
+                    @analistas
+                </span>
+
+                <p class="text-muted mb-0 mt-2">
+                    Acceso operativo
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+
+        <h4 class="fw-bold mb-1">
+            Cuentas registradas
+        </h4>
+
+        <p class="text-muted mb-4">
+            Consulta usuarios y modifica sus permisos.
+        </p>
+
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Rol actual</th>
+                            <th>Estado</th>
+                            <th class="text-end">
+                                Acciones
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var usuario in Model)
+                        {
+                            string colorRol =
+                                usuario.Rol.Contains("Administrador")
+                                    ? "success"
+                                    : usuario.Rol.Contains("Analista")
+                                        ? "primary"
+                                        : "secondary";
+
+                            <tr>
+                                <td>
+                                    <strong>
+                                        @usuario.Correo
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    <span class="badge bg-@colorRol">
+                                        @usuario.Rol
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @if (usuario.EsUsuarioActual)
+                                    {
+                                        <span class="text-success
+                                                     fw-semibold">
+                                            Sesión actual
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            Cuenta activa
+                                        </span>
+                                    }
+                                </td>
+
+                                <td class="text-end">
+
+                                    @if (usuario.EsUsuarioActual)
+                                    {
+                                        <span class="text-muted small">
+                                            Cuenta protegida
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <div class="d-flex flex-wrap
+                                                    justify-content-end
+                                                    gap-2">
+
+                                            <form asp-action="CambiarRol"
+                                                  method="post"
+                                                  class="d-flex gap-2">
+
+                                                <input type="hidden"
+                                                       name="id"
+                                                       value="@usuario.Id" />
+
+                                                <select name="rol"
+                                                        class="form-select
+                                                               form-select-sm">
+
+                                                    @if (usuario.Rol.Contains(
+                                                        "Administrador"))
+                                                    {
+                                                        <option value="Administrador"
+                                                                selected>
+                                                            Administrador
+                                                        </option>
+
+                                                        <option value="Analista">
+                                                            Analista
+                                                        </option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="Administrador">
+                                                            Administrador
+                                                        </option>
+
+                                                        <option value="Analista"
+                                                                selected>
+                                                            Analista
+                                                        </option>
+                                                    }
+
+                                                </select>
+
+                                                <button type="submit"
+                                                        class="btn btn-sm
+                                                               btn-outline-success">
+                                                    Guardar rol
+                                                </button>
+
+                                            </form>
+
+                                            <form asp-action="Eliminar"
+                                                  method="post"
+                                                  onsubmit="return confirm(
+                                                    '¿Seguro que deseas eliminar este usuario?');">
+
+                                                <input type="hidden"
+                                                       name="id"
+                                                       value="@usuario.Id" />
+
+                                                <button type="submit"
+                                                        class="btn btn-sm
+                                                               btn-outline-danger">
+                                                    Eliminar
+                                                </button>
+
+                                            </form>
+
+                                        </div>
+                                    }
+
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <h5>No hay usuarios registrados</h5>
+            </div>
+        }
+
+    </div>
+</div>

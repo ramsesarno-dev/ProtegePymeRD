@@ -1,0 +1,473 @@
+﻿@model ProtegePymeRD.Models.Diagnostico
+
+@{
+    ViewData["Title"] = "Nuevo diagnóstico";
+}
+
+<div class="row justify-content-center">
+    <div class="col-xl-9">
+
+        <div class="mb-4">
+            <span class="text-success fw-semibold small">
+                PROTEGESCORE
+            </span>
+
+            <h1 class="fw-bold mt-2 mb-2">
+                Diagnóstico de seguridad
+            </h1>
+
+            <p class="text-muted mb-1">
+                Empresa evaluada:
+                <strong class="text-dark">
+                    @ViewBag.EmpresaNombre
+                </strong>
+            </p>
+
+            <p class="text-muted">
+                Responde las diez preguntas según la situación
+                actual de la empresa.
+            </p>
+        </div>
+
+        <form asp-action="Create"
+              method="post"
+              id="diagnosticoForm">
+            <input asp-for="EmpresaId" type="hidden" />
+
+            <div asp-validation-summary="ModelOnly"
+                 class="alert alert-danger">
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4 p-md-5">
+
+                    <h5 class="fw-bold mb-1">
+                        Identificar
+                    </h5>
+
+                    <p class="text-muted mb-4">
+                        Conocimiento de activos y vulnerabilidades.
+                    </p>
+
+                    <div class="border rounded p-4 mb-3">
+                        <div class="fw-semibold">
+                            1.
+                            <label asp-for="TieneInventarioActivos"></label>
+                        </div>
+
+                        <div class="d-flex gap-4 mt-3">
+                            <div class="form-check">
+                                <input asp-for="TieneInventarioActivos"
+                                       type="radio"
+                                       value="true"
+                                       id="inventarioSi"
+                                       class="form-check-input" />
+
+                                <label for="inventarioSi"
+                                       class="form-check-label">
+                                    Sí
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input asp-for="TieneInventarioActivos"
+                                       type="radio"
+                                       value="false"
+                                       id="inventarioNo"
+                                       class="form-check-input" />
+
+                                <label for="inventarioNo"
+                                       class="form-check-label">
+                                    No
+                                </label>
+                            </div>
+                        </div>
+
+                        <span asp-validation-for="TieneInventarioActivos"
+                              class="text-danger small">
+                        </span>
+                    </div>
+
+                    <div class="border rounded p-4">
+                        <div class="fw-semibold">
+                            2.
+                            <label asp-for="GestionaVulnerabilidades"></label>
+                        </div>
+
+                        <div class="d-flex gap-4 mt-3">
+                            <div class="form-check">
+                                <input asp-for="GestionaVulnerabilidades"
+                                       type="radio"
+                                       value="true"
+                                       id="vulnerabilidadesSi"
+                                       class="form-check-input" />
+
+                                <label for="vulnerabilidadesSi"
+                                       class="form-check-label">
+                                    Sí
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input asp-for="GestionaVulnerabilidades"
+                                       type="radio"
+                                       value="false"
+                                       id="vulnerabilidadesNo"
+                                       class="form-check-input" />
+
+                                <label for="vulnerabilidadesNo"
+                                       class="form-check-label">
+                                    No
+                                </label>
+                            </div>
+                        </div>
+
+                        <span asp-validation-for="GestionaVulnerabilidades"
+                              class="text-danger small">
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4 p-md-5">
+
+                    <h5 class="fw-bold mb-1">
+                        Proteger
+                    </h5>
+
+                    <p class="text-muted mb-4">
+                        Controles para reducir la posibilidad de incidentes.
+                    </p>
+
+                    <div class="border rounded p-4 mb-3">
+                        <div class="fw-semibold">
+                            3.
+                            <label asp-for="UtilizaMfa"></label>
+                        </div>
+
+                        <div class="d-flex gap-4 mt-3">
+                            <div class="form-check">
+                                <input asp-for="UtilizaMfa"
+                                       type="radio"
+                                       value="true"
+                                       id="mfaSi"
+                                       class="form-check-input" />
+                                <label for="mfaSi">Sí</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input asp-for="UtilizaMfa"
+                                       type="radio"
+                                       value="false"
+                                       id="mfaNo"
+                                       class="form-check-input" />
+                                <label for="mfaNo">No</label>
+                            </div>
+                        </div>
+
+                        <span asp-validation-for="UtilizaMfa"
+                              class="text-danger small"></span>
+                    </div>
+
+                    <div class="border rounded p-4 mb-3">
+                        <div class="fw-semibold">
+                            4.
+                            <label asp-for="MantieneActualizaciones"></label>
+                        </div>
+
+                        <div class="d-flex gap-4 mt-3">
+                            <div class="form-check">
+                                <input asp-for="MantieneActualizaciones"
+                                       type="radio"
+                                       value="true"
+                                       id="actualizacionesSi"
+                                       class="form-check-input" />
+                                <label for="actualizacionesSi">Sí</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input asp-for="MantieneActualizaciones"
+                                       type="radio"
+                                       value="false"
+                                       id="actualizacionesNo"
+                                       class="form-check-input" />
+                                <label for="actualizacionesNo">No</label>
+                            </div>
+                        </div>
+
+                        <span asp-validation-for="MantieneActualizaciones"
+                              class="text-danger small"></span>
+                    </div>
+
+                    <div class="border rounded p-4">
+                        <div class="fw-semibold">
+                            5.
+                            <label asp-for="CapacitaEmpleados"></label>
+                        </div>
+
+                        <div class="d-flex gap-4 mt-3">
+                            <div class="form-check">
+                                <input asp-for="CapacitaEmpleados"
+                                       type="radio"
+                                       value="true"
+                                       id="capacitacionSi"
+                                       class="form-check-input" />
+                                <label for="capacitacionSi">Sí</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input asp-for="CapacitaEmpleados"
+                                       type="radio"
+                                       value="false"
+                                       id="capacitacionNo"
+                                       class="form-check-input" />
+                                <label for="capacitacionNo">No</label>
+                            </div>
+                        </div>
+
+                        <span asp-validation-for="CapacitaEmpleados"
+                              class="text-danger small"></span>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4 p-md-5">
+
+                    <h5 class="fw-bold mb-4">
+                        Detectar y responder
+                    </h5>
+
+                    <div class="border rounded p-4 mb-3">
+                        <div class="fw-semibold">
+                            6.
+                            <label asp-for="MonitoreaAlertas"></label>
+                        </div>
+
+                        <div class="d-flex gap-4 mt-3">
+                            <div class="form-check">
+                                <input asp-for="MonitoreaAlertas"
+                                       type="radio"
+                                       value="true"
+                                       id="alertasSi"
+                                       class="form-check-input" />
+                                <label for="alertasSi">Sí</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input asp-for="MonitoreaAlertas"
+                                       type="radio"
+                                       value="false"
+                                       id="alertasNo"
+                                       class="form-check-input" />
+                                <label for="alertasNo">No</label>
+                            </div>
+                        </div>
+
+                        <span asp-validation-for="MonitoreaAlertas"
+                              class="text-danger small"></span>
+                    </div>
+
+                    <div class="border rounded p-4 mb-3">
+                        <div class="fw-semibold">
+                            7.
+                            <label asp-for="TienePlanIncidentes"></label>
+                        </div>
+
+                        <div class="d-flex gap-4 mt-3">
+                            <div class="form-check">
+                                <input asp-for="TienePlanIncidentes"
+                                       type="radio"
+                                       value="true"
+                                       id="incidentesSi"
+                                       class="form-check-input" />
+                                <label for="incidentesSi">Sí</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input asp-for="TienePlanIncidentes"
+                                       type="radio"
+                                       value="false"
+                                       id="incidentesNo"
+                                       class="form-check-input" />
+                                <label for="incidentesNo">No</label>
+                            </div>
+                        </div>
+
+                        <span asp-validation-for="TienePlanIncidentes"
+                              class="text-danger small"></span>
+                    </div>
+
+                    <div class="border rounded p-4">
+                        <div class="fw-semibold">
+                            8.
+                            <label asp-for="TieneResponsables"></label>
+                        </div>
+
+                        <div class="d-flex gap-4 mt-3">
+                            <div class="form-check">
+                                <input asp-for="TieneResponsables"
+                                       type="radio"
+                                       value="true"
+                                       id="responsablesSi"
+                                       class="form-check-input" />
+                                <label for="responsablesSi">Sí</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input asp-for="TieneResponsables"
+                                       type="radio"
+                                       value="false"
+                                       id="responsablesNo"
+                                       class="form-check-input" />
+                                <label for="responsablesNo">No</label>
+                            </div>
+                        </div>
+
+                        <span asp-validation-for="TieneResponsables"
+                              class="text-danger small"></span>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4 p-md-5">
+
+                    <h5 class="fw-bold mb-4">
+                        Recuperar
+                    </h5>
+
+                    <div class="border rounded p-4 mb-3">
+                        <div class="fw-semibold">
+                            9.
+                            <label asp-for="RealizaRespaldos"></label>
+                        </div>
+
+                        <div class="d-flex gap-4 mt-3">
+                            <div class="form-check">
+                                <input asp-for="RealizaRespaldos"
+                                       type="radio"
+                                       value="true"
+                                       id="respaldosSi"
+                                       class="form-check-input" />
+                                <label for="respaldosSi">Sí</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input asp-for="RealizaRespaldos"
+                                       type="radio"
+                                       value="false"
+                                       id="respaldosNo"
+                                       class="form-check-input" />
+                                <label for="respaldosNo">No</label>
+                            </div>
+                        </div>
+
+                        <span asp-validation-for="RealizaRespaldos"
+                              class="text-danger small"></span>
+                    </div>
+
+                    <div class="border rounded p-4">
+                        <div class="fw-semibold">
+                            10.
+                            <label asp-for="PruebaRestauraciones"></label>
+                        </div>
+
+                        <div class="d-flex gap-4 mt-3">
+                            <div class="form-check">
+                                <input asp-for="PruebaRestauraciones"
+                                       type="radio"
+                                       value="true"
+                                       id="restauracionesSi"
+                                       class="form-check-input" />
+                                <label for="restauracionesSi">Sí</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input asp-for="PruebaRestauraciones"
+                                       type="radio"
+                                       value="false"
+                                       id="restauracionesNo"
+                                       class="form-check-input" />
+                                <label for="restauracionesNo">No</label>
+                            </div>
+                        </div>
+
+                        <span asp-validation-for="PruebaRestauraciones"
+                              class="text-danger small"></span>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <label asp-for="Observaciones"
+                           class="form-label fw-semibold"></label>
+
+                    <textarea asp-for="Observaciones"
+                              class="form-control"
+                              rows="4"
+                              placeholder="Agrega hallazgos o comentarios opcionales">
+                    </textarea>
+
+                    <span asp-validation-for="Observaciones"
+                          class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mb-5">
+                <a asp-controller="Empresas"
+                   asp-action="Index"
+                   class="btn btn-light px-4">
+                    Cancelar
+                </a>
+            </div>
+
+                <button type="submit"
+                        id="btnCalcular"
+                        class="btn btn-success px-4">
+                    Calcular ProtegeScore
+                </button>
+
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const formulario =
+                document.getElementById("diagnosticoForm");
+
+            const boton =
+                document.getElementById("btnCalcular");
+
+            let enviando = false;
+
+            formulario.addEventListener("submit", function (event) {
+                if (enviando) {
+                    event.preventDefault();
+                    return;
+                }
+
+                if (typeof window.jQuery !== "undefined"
+                    && !$(formulario).valid()) {
+                    return;
+                }
+
+                enviando = true;
+                boton.disabled = true;
+                boton.textContent = "Calculando...";
+            });
+        });
+    </script>
+}

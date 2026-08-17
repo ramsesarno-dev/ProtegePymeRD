@@ -1,0 +1,151 @@
+﻿@using ProtegePymeRD.Models
+@model AlertaSeguridad
+
+@{
+    ViewData["Title"] = "Atender alerta";
+
+    string colorSeveridad = Model.Severidad switch
+    {
+        SeveridadAlerta.Critica => "danger",
+        SeveridadAlerta.Alta => "danger",
+        SeveridadAlerta.Media => "warning",
+        SeveridadAlerta.Baja => "info",
+        _ => "secondary"
+    };
+}
+
+<div class="row justify-content-center">
+    <div class="col-xl-8">
+
+        <div class="mb-4">
+            <span class="text-success fw-semibold small">
+                RESPUESTA Y SEGUIMIENTO
+            </span>
+
+            <h1 class="fw-bold mt-2 mb-2">
+                Atender alerta
+            </h1>
+
+            <p class="text-muted">
+                Empresa:
+                <strong class="text-dark">
+                    @Model.Empresa?.Nombre
+                </strong>
+            </p>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+
+                <div class="d-flex justify-content-between
+                            align-items-start gap-3 mb-3">
+
+                    <div>
+                        <h4 class="fw-bold mb-2">
+                            @Model.Titulo
+                        </h4>
+
+                        <p class="text-muted mb-0">
+                            @Model.Descripcion
+                        </p>
+                    </div>
+
+                    <span class="badge bg-@colorSeveridad">
+                        @Html.DisplayFor(model => model.Severidad)
+                    </span>
+                </div>
+
+                <hr />
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <span class="text-muted">Tipo</span>
+
+                        <div class="fw-semibold">
+                            @Html.DisplayFor(model => model.Tipo)
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <span class="text-muted">Detectada</span>
+
+                        <div class="fw-semibold">
+                            @Model.FechaDeteccion.ToString(
+                            "dd/MM/yyyy hh:mm tt")
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <form asp-action="Resolver" method="post">
+            <input type="hidden"
+                   name="id"
+                   value="@Model.Id" />
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+
+                    <h4 class="fw-bold mb-1">
+                        Seguimiento
+                    </h4>
+
+                    <p class="text-muted mb-4">
+                        Actualiza el estado y documenta las acciones realizadas.
+                    </p>
+
+                    <div class="row g-4">
+
+                        <div class="col-md-6">
+                            <label asp-for="Estado"
+                                   class="form-label">
+                            </label>
+
+                            <select asp-for="Estado"
+                                    asp-items="Html.GetEnumSelectList<EstadoAlerta>()"
+                                    class="form-select">
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Responsable"
+                                   class="form-label">
+                            </label>
+
+                            <input asp-for="Responsable"
+                                   class="form-control"
+                                   placeholder="Persona responsable" />
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="AccionTomada"
+                                   class="form-label">
+                            </label>
+
+                            <textarea asp-for="AccionTomada"
+                                      class="form-control"
+                                      rows="5"
+                                      placeholder="Describe las acciones realizadas o pendientes."></textarea>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mb-5">
+                <a asp-action="Index"
+                   asp-route-empresaId="@Model.EmpresaId"
+                   class="btn btn-light px-4">
+                    Cancelar
+                </a>
+
+                <button type="submit"
+                        class="btn btn-success px-4">
+                    Guardar seguimiento
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>

@@ -1,0 +1,197 @@
+﻿@model ProtegePymeRD.Models.Empresa
+
+@{
+    ViewData["Title"] = "Registrar empresa";
+}
+
+<div class="row justify-content-center">
+    <div class="col-xl-9 col-lg-10">
+
+        <div class="d-flex justify-content-between align-items-start mb-4">
+            <div>
+                <span class="text-success fw-semibold small">
+                    INCORPORACIÓN DE CLIENTE
+                </span>
+
+                <h1 class="fw-bold mt-2 mb-2">
+                    Registrar empresa
+                </h1>
+
+                <p class="text-muted mb-0">
+                    Agrega una MIPYME para comenzar su diagnóstico
+                    de seguridad y continuidad digital.
+                </p>
+            </div>
+
+            <a asp-action="Index"
+               class="btn btn-outline-secondary">
+                Volver
+            </a>
+        </div>
+
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly"
+                 class="alert alert-danger"
+                 role="alert">
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4 p-md-5">
+
+                    <h5 class="fw-bold mb-1">
+                        Información de la empresa
+                    </h5>
+
+                    <p class="text-muted mb-4">
+                        Los campos marcados son necesarios para
+                        iniciar el servicio.
+                    </p>
+
+                    <div class="row g-4">
+
+                        <div class="col-md-8">
+                            <label asp-for="Nombre"
+                                   class="form-label fw-semibold">
+                            </label>
+
+                            <input asp-for="Nombre"
+                                   class="form-control form-control-lg"
+                                   placeholder="Ejemplo: Soluciones Contables RD" />
+
+                            <span asp-validation-for="Nombre"
+                                  class="text-danger small">
+                            </span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="Rnc"
+                                   class="form-label fw-semibold">
+                            </label>
+
+                            <input asp-for="Rnc"
+                                   class="form-control form-control-lg"
+                                   inputmode="numeric"
+                                   maxlength="11"
+                                   placeholder="Solo números" />
+
+                            <span asp-validation-for="Rnc"
+                                  class="text-danger small">
+                            </span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Sector"
+                                   class="form-label fw-semibold">
+                            </label>
+
+                            <select asp-for="Sector"
+                                    class="form-select form-select-lg">
+                                <option value="">Selecciona un sector</option>
+                                <option value="Contabilidad">Contabilidad</option>
+                                <option value="Servicios profesionales">
+                                    Servicios profesionales
+                                </option>
+                                <option value="Comercio">Comercio</option>
+                                <option value="Comercio electrónico">
+                                    Comercio electrónico
+                                </option>
+                                <option value="Administración">
+                                    Administración
+                                </option>
+                                <option value="Otro">Otro</option>
+                            </select>
+
+                            <span asp-validation-for="Sector"
+                                  class="text-danger small">
+                            </span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="CantidadEmpleados"
+                                   class="form-label fw-semibold">
+                            </label>
+
+                            <input asp-for="CantidadEmpleados"
+                                   class="form-control form-control-lg"
+                                   min="1"
+                                   max="500"
+                                   placeholder="Ejemplo: 12" />
+
+                            <span asp-validation-for="CantidadEmpleados"
+                                  class="text-danger small">
+                            </span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="CorreoContacto"
+                                   class="form-label fw-semibold">
+                            </label>
+
+                            <input asp-for="CorreoContacto"
+                                   class="form-control form-control-lg"
+                                   placeholder="contacto@empresa.com" />
+
+                            <span asp-validation-for="CorreoContacto"
+                                  class="text-danger small">
+                            </span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Telefono"
+                                   class="form-label fw-semibold">
+                            </label>
+
+                            <input asp-for="Telefono"
+                                   class="form-control form-control-lg"
+                                   placeholder="809-555-0000" />
+
+                            <span asp-validation-for="Telefono"
+                                  class="text-danger small">
+                            </span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Plan"
+                                   class="form-label fw-semibold">
+                            </label>
+
+                            <select asp-for="Plan"
+                                    asp-items="Html.GetEnumSelectList<PlanServicio>()"
+                                    class="form-select form-select-lg">
+                            </select>
+
+                            <div class="form-text">
+                                El plan podrá cambiarse posteriormente.
+                            </div>
+
+                            <span asp-validation-for="Plan"
+                                  class="text-danger small">
+                            </span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="card-footer bg-white border-top p-4">
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="Index"
+                           class="btn btn-light px-4">
+                            Cancelar
+                        </a>
+
+                        <button type="submit"
+                                class="btn btn-success px-4">
+                            Guardar empresa
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

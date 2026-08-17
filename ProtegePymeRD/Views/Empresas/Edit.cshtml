@@ -1,0 +1,255 @@
+﻿@using ProtegePymeRD.Models
+@model Empresa
+
+@{
+    ViewData["Title"] = "Editar empresa";
+}
+
+<div class="row justify-content-center">
+    <div class="col-xl-9">
+
+        <div class="mb-4">
+            <span class="text-success fw-semibold small">
+                ADMINISTRACIÓN DE CLIENTES
+            </span>
+
+            <h1 class="fw-bold mt-2 mb-2">
+                Editar empresa
+            </h1>
+
+            <p class="text-muted mb-0">
+                Actualiza los datos generales, el plan contratado
+                y el estado de la empresa.
+            </p>
+        </div>
+
+        <div class="alert alert-light border mb-4">
+            <strong>Información:</strong>
+            el ProtegeScore y la fecha de incorporación se
+            administran automáticamente y no pueden modificarse
+            desde este formulario.
+        </div>
+
+        <form asp-action="Edit"
+              asp-route-id="@Model.Id"
+              method="post">
+
+            <input asp-for="Id" type="hidden" />
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div asp-validation-summary="ModelOnly"
+                     class="alert alert-danger">
+                </div>
+            }
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+
+                    <h4 class="fw-bold mb-1">
+                        Información de la empresa
+                    </h4>
+
+                    <p class="text-muted mb-4">
+                        Datos utilizados para identificar a la MIPYME.
+                    </p>
+
+                    <div class="row g-3">
+
+                        <div class="col-md-7">
+                            <label asp-for="Nombre"
+                                   class="form-label">
+                            </label>
+
+                            <input asp-for="Nombre"
+                                   class="form-control"
+                                   placeholder="Nombre comercial" />
+
+                            <span asp-validation-for="Nombre"
+                                  class="text-danger">
+                            </span>
+                        </div>
+
+                        <div class="col-md-5">
+                            <label asp-for="Rnc"
+                                   class="form-label">
+                            </label>
+
+                            <input asp-for="Rnc"
+                                   class="form-control"
+                                   inputmode="numeric"
+                                   maxlength="11"
+                                   placeholder="Solo números" />
+
+                            <span asp-validation-for="Rnc"
+                                  class="text-danger">
+                            </span>
+                        </div>
+
+                        <div class="col-md-7">
+                            <label asp-for="Sector"
+                                   class="form-label">
+                            </label>
+
+                            <input asp-for="Sector"
+                                   class="form-control"
+                                   list="sectoresEmpresariales"
+                                   placeholder="Selecciona o escribe un sector" />
+
+                            <datalist id="sectoresEmpresariales">
+                                <option value="Contabilidad"></option>
+                                <option value="Comercio"></option>
+                                <option value="Tecnología"></option>
+                                <option value="Servicios profesionales"></option>
+                                <option value="Salud"></option>
+                                <option value="Educación"></option>
+                                <option value="Manufactura"></option>
+                                <option value="Turismo"></option>
+                                <option value="Construcción"></option>
+                                <option value="Otro"></option>
+                            </datalist>
+
+                            <span asp-validation-for="Sector"
+                                  class="text-danger">
+                            </span>
+                        </div>
+
+                        <div class="col-md-5">
+                            <label asp-for="CantidadEmpleados"
+                                   class="form-label">
+                            </label>
+
+                            <input asp-for="CantidadEmpleados"
+                                   type="number"
+                                   min="1"
+                                   max="500"
+                                   class="form-control" />
+
+                            <span asp-validation-for="CantidadEmpleados"
+                                  class="text-danger">
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+
+                    <h4 class="fw-bold mb-1">
+                        Contacto y servicio
+                    </h4>
+
+                    <p class="text-muted mb-4">
+                        Información de comunicación y plan contratado.
+                    </p>
+
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <label asp-for="CorreoContacto"
+                                   class="form-label">
+                            </label>
+
+                            <input asp-for="CorreoContacto"
+                                   type="email"
+                                   class="form-control"
+                                   placeholder="contacto@empresa.com" />
+
+                            <span asp-validation-for="CorreoContacto"
+                                  class="text-danger">
+                            </span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Telefono"
+                                   class="form-label">
+                            </label>
+
+                            <input asp-for="Telefono"
+                                   type="tel"
+                                   class="form-control"
+                                   placeholder="809-555-0000" />
+
+                            <span asp-validation-for="Telefono"
+                                  class="text-danger">
+                            </span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Plan"
+                                   class="form-label">
+                            </label>
+
+                            <select asp-for="Plan"
+                                    asp-items="Html.GetEnumSelectList<PlanServicio>()"
+                                    class="form-select">
+
+                                <option value="">
+                                    Selecciona un plan
+                                </option>
+
+                            </select>
+
+                            <span asp-validation-for="Plan"
+                                  class="text-danger">
+                            </span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                Estado de la empresa
+                            </label>
+
+                            <div class="border rounded p-3">
+
+                                <div class="form-check form-switch mb-0">
+                                    <input asp-for="Activa"
+                                           class="form-check-input"
+                                           type="checkbox"
+                                           role="switch" />
+
+                                    <label asp-for="Activa"
+                                           class="form-check-label">
+                                        Empresa activa
+                                    </label>
+                                </div>
+
+                                <div class="form-text">
+                                    Las empresas inactivas se conservan,
+                                    pero no se consideran operativas.
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="d-flex flex-column flex-sm-row
+                        justify-content-end gap-2 mb-5">
+
+                <a asp-action="Index"
+                   class="btn btn-light px-4">
+                    Cancelar
+                </a>
+
+                <button type="submit"
+                        class="btn btn-success px-4">
+                    Guardar cambios
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,260 @@
+﻿@model ProtegePymeRD.Models.CuentaCritica
+
+@{
+    ViewData["Title"] = "Registrar cuenta crítica";
+
+    var empresa =
+        ViewBag.Empresa as ProtegePymeRD.Models.Empresa;
+}
+
+<div class="row justify-content-center">
+    <div class="col-xl-9">
+
+        <div class="mb-4">
+            <span class="text-success fw-semibold small">
+                PROTEGEACCESS
+            </span>
+
+            <h1 class="fw-bold mt-2 mb-2">
+                Registrar cuenta crítica
+            </h1>
+
+            <p class="text-muted mb-1">
+                Empresa:
+                <strong class="text-dark">
+                    @empresa?.Nombre
+                </strong>
+            </p>
+
+            <p class="text-muted">
+                Registra las cuentas importantes sin almacenar
+                contraseñas ni datos secretos.
+            </p>
+        </div>
+
+        <div class="alert alert-warning">
+            <strong>Importante:</strong>
+            nunca escribas contraseñas, códigos MFA, claves privadas
+            ni preguntas de seguridad.
+        </div>
+
+        <form asp-action="Create" method="post">
+            <input asp-for="EmpresaId" type="hidden" />
+
+            <div asp-validation-summary="ModelOnly"
+                 class="alert alert-danger"></div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+
+                    <h4 class="fw-bold mb-1">
+                        Identificación de la cuenta
+                    </h4>
+
+                    <p class="text-muted mb-4">
+                        Indica el servicio y quién utiliza la cuenta.
+                    </p>
+
+                    <div class="row g-4">
+
+                        <div class="col-md-6">
+                            <label asp-for="NombreServicio"
+                                   class="form-label">
+                                Servicio o plataforma
+                            </label>
+
+                            <input asp-for="NombreServicio"
+                                   class="form-control"
+                                   placeholder="Ejemplo: Microsoft 365" />
+
+                            <span asp-validation-for="NombreServicio"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="UsuarioCorreo"
+                                   class="form-label">
+                                Usuario o correo
+                            </label>
+
+                            <input asp-for="UsuarioCorreo"
+                                   class="form-control"
+                                   placeholder="administracion@empresa.com" />
+
+                            <span asp-validation-for="UsuarioCorreo"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Categoria"
+                                   class="form-label">
+                                Categoría
+                            </label>
+
+                            <select asp-for="Categoria"
+                                    asp-items="Html.GetEnumSelectList(Model.Categoria.GetType())"
+                                    class="form-select">
+                            </select>
+
+                            <span asp-validation-for="Categoria"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="NivelPrivilegio"
+                                   class="form-label">
+                                Nivel de privilegio
+                            </label>
+
+                            <select asp-for="NivelPrivilegio"
+                                    asp-items="Html.GetEnumSelectList(Model.NivelPrivilegio.GetType())"
+                                    class="form-select">
+                            </select>
+
+                            <span asp-validation-for="NivelPrivilegio"
+                                  class="text-danger"></span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+
+                    <h4 class="fw-bold mb-1">
+                        Controles de acceso
+                    </h4>
+
+                    <p class="text-muted mb-4">
+                        Verifica la protección y los permisos de la cuenta.
+                    </p>
+
+                    <div class="border rounded p-3 mb-3">
+                        <div class="form-check">
+                            <input asp-for="TieneMfa"
+                                   class="form-check-input" />
+
+                            <label asp-for="TieneMfa"
+                                   class="form-check-label fw-semibold">
+                                La cuenta utiliza autenticación multifactor
+                            </label>
+                        </div>
+
+                        <small class="text-muted">
+                            MFA agrega una verificación adicional al inicio de sesión.
+                        </small>
+                    </div>
+
+                    <div class="border rounded p-3 mb-3">
+                        <div class="form-check">
+                            <input asp-for="CumpleMinimoPrivilegio"
+                                   class="form-check-input" />
+
+                            <label asp-for="CumpleMinimoPrivilegio"
+                                   class="form-check-label fw-semibold">
+                                Cumple con el principio de mínimo privilegio
+                            </label>
+                        </div>
+
+                        <small class="text-muted">
+                            La cuenta posee únicamente los permisos necesarios.
+                        </small>
+                    </div>
+
+                    <div class="border rounded p-3">
+                        <div class="form-check">
+                            <input asp-for="Activa"
+                                   class="form-check-input" />
+
+                            <label asp-for="Activa"
+                                   class="form-check-label fw-semibold">
+                                La cuenta se encuentra activa
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+
+                    <h4 class="fw-bold mb-1">
+                        Revisión y seguimiento
+                    </h4>
+
+                    <p class="text-muted mb-4">
+                        Registra quién verificó la cuenta y cuándo lo hizo.
+                    </p>
+
+                    <div class="row g-4">
+
+                        <div class="col-md-6">
+                            <label asp-for="Responsable"
+                                   class="form-label">
+                                Responsable
+                            </label>
+
+                            <input asp-for="Responsable"
+                                   class="form-control"
+                                   placeholder="Nombre del responsable" />
+
+                            <span asp-validation-for="Responsable"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="FechaRevision"
+                                   class="form-label">
+                                Fecha de revisión
+                            </label>
+
+                            <input asp-for="FechaRevision"
+                                   asp-format="{0:yyyy-MM-ddTHH:mm}"
+                                   type="datetime-local"
+                                   class="form-control" />
+
+                            <span asp-validation-for="FechaRevision"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Observaciones"
+                                   class="form-label">
+                                Observaciones
+                            </label>
+
+                            <textarea asp-for="Observaciones"
+                                      class="form-control"
+                                      rows="4"
+                                      placeholder="Describe riesgos, acciones pendientes o recomendaciones."></textarea>
+
+                            <span asp-validation-for="Observaciones"
+                                  class="text-danger"></span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mb-5">
+                <a asp-action="Index"
+                   asp-route-empresaId="@Model.EmpresaId"
+                   class="btn btn-light px-4">
+                    Cancelar
+                </a>
+
+                <button type="submit"
+                        class="btn btn-success px-4">
+                    Guardar cuenta
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

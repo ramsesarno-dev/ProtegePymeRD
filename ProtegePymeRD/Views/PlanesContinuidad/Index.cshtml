@@ -1,0 +1,391 @@
+﻿@using ProtegePymeRD.Models
+@model PlanContinuidadDigital
+
+@{
+    ViewData["Title"] = "Plan de continuidad";
+
+    var empresa = ViewBag.Empresa as Empresa;
+}
+
+@if (TempData["MensajeExito"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["MensajeExito"]
+    </div>
+}
+
+@if (TempData["MensajeAdvertencia"] != null)
+{
+    <div class="alert alert-warning">
+        @TempData["MensajeAdvertencia"]
+    </div>
+}
+
+<div class="d-flex flex-column flex-md-row
+            justify-content-between align-items-md-end
+            gap-3 mb-4">
+
+    <div>
+        <span class="text-success fw-semibold small">
+            CONTINUIDAD DIGITAL
+        </span>
+
+        <h1 class="fw-bold mt-2 mb-2">
+            Plan de continuidad
+        </h1>
+
+        <p class="text-muted mb-0">
+            Empresa:
+            <strong class="text-dark">
+                @empresa?.Nombre
+            </strong>
+        </p>
+    </div>
+
+    @if (Model == null)
+    {
+        <a asp-action="Create"
+           asp-route-empresaId="@empresa?.Id"
+           class="btn btn-success px-4">
+            Crear plan
+        </a>
+    }
+    else
+    {
+        <a asp-action="Edit"
+           asp-route-id="@Model.Id"
+           class="btn btn-success px-4">
+            Actualizar plan
+        </a>
+    }
+</div>
+
+@if (Model == null)
+{
+    <div class="card border-0 shadow-sm">
+        <div class="card-body text-center p-5">
+
+            <h4 class="fw-bold">
+                Esta empresa todavía no tiene un plan
+            </h4>
+
+            <p class="text-muted">
+                Define responsables, sistemas críticos,
+                tiempos de recuperación y procedimientos
+                para responder ante una interrupción.
+            </p>
+
+            <a asp-action="Create"
+               asp-route-empresaId="@empresa?.Id"
+               class="btn btn-success px-4 mt-2">
+                Crear primer plan
+            </a>
+
+        </div>
+    </div>
+}
+else
+{
+    string colorEstado =
+        Model.Estado == EstadoPlanContinuidad.Activo
+            ? "success"
+            : Model.Estado ==
+                EstadoPlanContinuidad.RequiereActualizacion
+                ? "danger"
+                : Model.Estado ==
+                    EstadoPlanContinuidad.EnRevision
+                    ? "warning"
+                    : "secondary";
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+
+                    <p class="text-muted mb-2">
+                        Estado del plan
+                    </p>
+
+                    <span class="badge bg-@colorEstado fs-6">
+                        @Model.Estado
+                    </span>
+
+                    <p class="small text-muted mb-0 mt-3">
+                        Actualizado el
+                        @Model.FechaUltimaActualizacion.ToString("dd/MM/yyyy")
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+
+                    <p class="text-muted mb-2">
+                        Recuperación RTO
+                    </p>
+
+                    <span class="display-6 fw-bold">
+                        @Model.RtoHoras
+                    </span>
+
+                    <span class="text-muted">
+                        horas
+                    </span>
+
+                    <p class="small text-muted mb-0 mt-2">
+                        Tiempo máximo para recuperar operaciones
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+
+                    <p class="text-muted mb-2">
+                        Pérdida aceptable RPO
+                    </p>
+
+                    <span class="display-6 fw-bold">
+                        @Model.RpoHoras
+                    </span>
+
+                    <span class="text-muted">
+                        horas
+                    </span>
+
+                    <p class="small text-muted mb-0 mt-2">
+                        Máxima información que podría perderse
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+
+                    <p class="text-muted mb-2">
+                        Prueba del plan
+                    </p>
+
+                    @if (Model.PlanProbado)
+                    {
+                        <span class="fs-4 fw-bold text-success">
+                            Verificada
+                        </span>
+
+                        <p class="small text-muted mb-0 mt-2">
+                            @Model.FechaUltimaPrueba?.ToString("dd/MM/yyyy")
+                        </p>
+                    }
+                    else
+                    {
+                        <span class="fs-4 fw-bold text-warning">
+                            Pendiente
+                        </span>
+
+                        <p class="small text-muted mb-0 mt-2">
+                            El plan todavía no ha sido probado
+                        </p>
+                    }
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    @if (Model.RequiereRevision)
+    {
+        <div class="alert alert-warning">
+            La fecha de revisión de este plan está vencida.
+            Actualiza su contenido y establece una nueva fecha.
+        </div>
+    }
+
+    <div class="row g-4">
+
+        <div class="col-lg-8">
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+
+                    <h4 class="fw-bold mb-1">
+                        @Model.Nombre
+                    </h4>
+
+                    <p class="text-muted mb-4">
+                        Estrategia de continuidad y recuperación.
+                    </p>
+
+                    <div class="mb-4">
+                        <h5 class="fw-bold">
+                            Sistemas y servicios críticos
+                        </h5>
+
+                        <p class="mb-0"
+                           style="white-space: pre-line;">
+                            @Model.SistemasCriticos
+                        </p>
+                    </div>
+
+                    <hr />
+
+                    <div class="mb-4">
+                        <h5 class="fw-bold">
+                            Procedimiento de respuesta
+                        </h5>
+
+                        <p class="mb-0"
+                           style="white-space: pre-line;">
+                            @Model.ProcedimientoRespuesta
+                        </p>
+                    </div>
+
+                    <hr />
+
+                    <div class="mb-4">
+                        <h5 class="fw-bold">
+                            Procedimiento de recuperación
+                        </h5>
+
+                        <p class="mb-0"
+                           style="white-space: pre-line;">
+                            @Model.ProcedimientoRecuperacion
+                        </p>
+                    </div>
+
+                    <hr />
+
+                    <div>
+                        <h5 class="fw-bold">
+                            Plan de comunicación
+                        </h5>
+
+                        <p class="mb-0"
+                           style="white-space: pre-line;">
+                            @Model.PlanComunicacion
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Observaciones))
+            {
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+
+                        <h5 class="fw-bold">
+                            Observaciones
+                        </h5>
+
+                        <p class="mb-0"
+                           style="white-space: pre-line;">
+                            @Model.Observaciones
+                        </p>
+
+                    </div>
+                </div>
+            }
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+
+                    <h5 class="fw-bold mb-4">
+                        Responsables y revisión
+                    </h5>
+
+                    <p class="text-muted mb-1">
+                        Responsable
+                    </p>
+
+                    <p class="fw-semibold">
+                        @Model.Responsable
+                    </p>
+
+                    <p class="text-muted mb-1">
+                        Contacto de emergencia
+                    </p>
+
+                    <p class="fw-semibold">
+                        @Model.ContactoEmergencia
+                    </p>
+
+                    <p class="text-muted mb-1">
+                        Próxima revisión
+                    </p>
+
+                    <p class="fw-semibold mb-0">
+                        @Model.ProximaRevision.ToString("dd/MM/yyyy")
+                    </p>
+
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+
+                    <h5 class="fw-bold mb-3">
+                        Acciones
+                    </h5>
+
+                    <a asp-action="Edit"
+                       asp-route-id="@Model.Id"
+                       class="btn btn-outline-success w-100 mb-2">
+                        Editar plan
+                    </a>
+
+                    @if (!Model.PlanProbado)
+                    {
+                        <form asp-action="MarcarProbado"
+                              asp-route-id="@Model.Id"
+                              method="post"
+                              class="mb-2"
+                              onsubmit="return confirm('¿Confirmas que el plan fue probado correctamente?');">
+
+                            <button type="submit"
+                                    class="btn btn-success w-100">
+                                Registrar prueba
+                            </button>
+                        </form>
+                    }
+
+                    <form asp-action="Eliminar"
+                          asp-route-id="@Model.Id"
+                          method="post"
+                          onsubmit="return confirm('¿Seguro que deseas eliminar este plan?');">
+
+                        <button type="submit"
+                                class="btn btn-outline-danger w-100">
+                            Eliminar plan
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+}
+
+<div class="mt-4 mb-5">
+    <a asp-controller="Empresas"
+       asp-action="Index"
+       class="btn btn-light">
+        Volver a empresas
+    </a>
+</div>
