@@ -1,68 +1,395 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+
+    string Active(string controller, string? action = null)
+    {
+        if (!string.Equals(currentController, controller, StringComparison.OrdinalIgnoreCase))
+            return "";
+
+        if (action != null &&
+            !string.Equals(currentAction, action, StringComparison.OrdinalIgnoreCase))
+            return "";
+
+        return "active";
+    }
+}
+
+<!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ProtegePymeRD</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/ProtegePymeRD.styles.css" asp-append-version="true" />
+
+    <title>@ViewData["Title"] - ProtegePyme RD</title>
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/ProtegePymeRD.styles.css"
+          asp-append-version="true" />
 </head>
+
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ProtegePymeRD</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacidad</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark"
-                               asp-area=""
-                               asp-controller="Empresas"
-                               asp-action="Index">
-                                Empresas
-                            </a>
-                        </li>
-                        @if (User.IsInRole("Administrador"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark"
-                                   asp-controller="Usuarios"
-                                   asp-action="Index">
-                                    Usuarios
-                                </a>
-                            </li>
-                        }
-                    </ul>
-                    <partial name="_LoginPartial" />
-                </div>
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <div class="app-shell">
+
+        <!-- SIDEBAR DESKTOP -->
+        <aside class="app-sidebar d-none d-lg-flex">
+
+            <div class="sidebar-brand">
+                <a asp-controller="Home"
+                   asp-action="Index"
+                   class="brand-link">
+
+                    <div class="brand-symbol">
+                        P
+                    </div>
+
+                    <div>
+                        <div class="brand-name">
+                            ProtegePyme
+                        </div>
+
+                        <div class="brand-country">
+                            RD
+                        </div>
+                    </div>
+                </a>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+
+
+            <div class="sidebar-content">
+
+                <div class="sidebar-section-title">
+                    RESUMEN
+                </div>
+
+                <nav class="sidebar-nav">
+
+                    <a asp-controller="Home"
+                       asp-action="Index"
+                       class="sidebar-link @Active("Home", "Index")">
+
+                        <span class="sidebar-icon">
+                            01
+                        </span>
+
+                        <span>
+                            Dashboard
+                        </span>
+                    </a>
+
+                </nav>
+
+
+                <div class="sidebar-section-title">
+                    GESTIÓN
+                </div>
+
+                <nav class="sidebar-nav">
+
+                    <a asp-controller="Empresas"
+                       asp-action="Index"
+                       class="sidebar-link @Active("Empresas")">
+
+                        <span class="sidebar-icon">
+                            02
+                        </span>
+
+                        <span>
+                            Empresas
+                        </span>
+                    </a>
+
+
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <a asp-controller="Usuarios"
+                           asp-action="Index"
+                           class="sidebar-link @Active("Usuarios")">
+
+                            <span class="sidebar-icon">
+                                03
+                            </span>
+
+                            <span>
+                                Usuarios
+                            </span>
+                        </a>
+                    }
+
+                </nav>
+
+
+                <div class="sidebar-section-title">
+                    SEGURIDAD
+                </div>
+
+                <div class="sidebar-coming-soon">
+
+                    <div class="coming-item">
+                        <span>ProtegeScore</span>
+                        <small>Próximamente</small>
+                    </div>
+
+                    <div class="coming-item">
+                        <span>Backups</span>
+                        <small>Próximamente</small>
+                    </div>
+
+                    <div class="coming-item">
+                        <span>Alertas</span>
+                        <small>Próximamente</small>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="sidebar-footer">
+
+                <div class="sidebar-user">
+
+                    <div class="user-avatar">
+                        @{
+                            var userName = User.Identity?.Name ?? "U";
+                            var firstLetter = userName.Substring(0, 1).ToUpper();
+                        }
+
+                        @firstLetter
+                    </div>
+
+                    <div class="sidebar-user-info">
+
+                        <span class="sidebar-user-name">
+                            @User.Identity?.Name
+                        </span>
+
+                        <small>
+                            @if (User.IsInRole("Administrador"))
+                            {
+                                <text>Administrador</text>
+                            }
+                            else
+                            {
+                                <text>Usuario</text>
+                            }
+                        </small>
+
+                    </div>
+
+                </div>
+
+                <partial name="_LoginPartial" />
+
+            </div>
+
+        </aside>
+
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <div class="app-main">
+
+            <!-- TOPBAR -->
+            <header class="app-topbar">
+
+                <div class="topbar-left">
+
+                    <!-- Botón móvil -->
+                    <button class="mobile-menu-button d-lg-none"
+                            type="button"
+                            data-bs-toggle="offcanvas"
+                            data-bs-target="#mobileSidebar"
+                            aria-controls="mobileSidebar">
+
+                        <span></span>
+                        <span></span>
+                        <span></span>
+
+                    </button>
+
+
+                    <div class="topbar-page">
+
+                        <span class="topbar-label">
+                            PROTEGEPYME RD
+                        </span>
+
+                        <span class="topbar-divider">
+                            /
+                        </span>
+
+                        <span class="topbar-current">
+                            @(ViewData["Title"] ?? "Dashboard")
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="topbar-right">
+
+                    <div class="system-status">
+                        <span class="status-dot"></span>
+
+                        Sistema operativo
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <main role="main"
+                  class="app-content">
+
+                @RenderBody()
+
+            </main>
+
+        </div>
+
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - ProtegePymeRD - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+
+    <!-- SIDEBAR MÓVIL -->
+    <div class="offcanvas offcanvas-start mobile-sidebar"
+         tabindex="-1"
+         id="mobileSidebar"
+         aria-labelledby="mobileSidebarLabel">
+
+        <div class="offcanvas-header">
+
+            <div>
+
+                <div class="brand-name">
+                    ProtegePyme
+                </div>
+
+                <div class="brand-country">
+                    RD
+                </div>
+
+            </div>
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="offcanvas"
+                    aria-label="Cerrar">
+            </button>
+
         </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+
+
+        <div class="offcanvas-body">
+
+            <div class="sidebar-section-title">
+                RESUMEN
+            </div>
+
+            <nav class="sidebar-nav">
+
+                <a asp-controller="Home"
+                   asp-action="Index"
+                   class="sidebar-link @Active("Home", "Index")">
+
+                    Dashboard
+
+                </a>
+
+            </nav>
+
+
+            <div class="sidebar-section-title">
+                GESTIÓN
+            </div>
+
+            <nav class="sidebar-nav">
+
+                <a asp-controller="Empresas"
+                   asp-action="Index"
+                   class="sidebar-link @Active("Empresas")">
+
+                    Empresas
+
+                </a>
+
+
+                @if (User.IsInRole("Administrador"))
+                {
+                    <a asp-controller="Usuarios"
+                       asp-action="Index"
+                       class="sidebar-link @Active("Usuarios")">
+
+                        Usuarios
+
+                    </a>
+                }
+
+            </nav>
+
+        </div>
+
+    </div>
+}
+else
+{
+    <!-- DISEÑO PARA LOGIN / REGISTER -->
+
+    <header class="public-header">
+
+        <div class="container-fluid">
+
+            <nav class="public-navbar">
+
+                <a asp-controller="Home"
+                   asp-action="Index"
+                   class="public-brand">
+
+                    <span class="public-brand-symbol">
+                        P
+                    </span>
+
+                    <span>
+                        ProtegePyme RD
+                    </span>
+
+                </a>
+
+                <partial name="_LoginPartial" />
+
+            </nav>
+
+        </div>
+
+    </header>
+
+
+    <main role="main">
+        @RenderBody()
+    </main>
+}
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="~/js/site.js"
+        asp-append-version="true">
+</script>
+
+@await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>

@@ -1,0 +1,298 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Iniciar sesión";
+}
+
+<div class="login-page">
+
+    <div class="login-container">
+
+        <!-- PANEL IZQUIERDO -->
+        <section class="login-brand-panel">
+
+            <div class="login-brand-content">
+
+                <div class="login-brand">
+
+                    <div class="login-brand-logo">
+                        P
+                    </div>
+
+                    <div>
+                        <strong>ProtegePyme</strong>
+                        <span>RD</span>
+                    </div>
+
+                </div>
+
+                <div class="login-brand-message">
+
+                    <span class="login-eyebrow">
+                        CIBERSEGURIDAD PARA MIPYMES
+                    </span>
+
+                    <h1>
+                        Seguridad que puedes entender.
+                    </h1>
+
+                    <p>
+                        Evalúa, protege y fortalece la continuidad
+                        digital de las MIPYMES desde una sola plataforma.
+                    </p>
+
+                </div>
+
+                <div class="login-benefits">
+
+                    <div class="login-benefit">
+
+                        <span class="login-benefit-symbol">
+                            01
+                        </span>
+
+                        <div>
+                            <strong>Evalúa</strong>
+
+                            <p>
+                                Conoce el nivel de protección mediante
+                                ProtegeScore.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="login-benefit">
+
+                        <span class="login-benefit-symbol">
+                            02
+                        </span>
+
+                        <div>
+                            <strong>Protege</strong>
+
+                            <p>
+                                Gestiona accesos, respaldos, alertas
+                                y controles esenciales.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="login-benefit">
+
+                        <span class="login-benefit-symbol">
+                            03
+                        </span>
+
+                        <div>
+                            <strong>Recupera</strong>
+
+                            <p>
+                                Prepara la empresa para continuar
+                                operando ante incidentes.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="login-brand-footer">
+                ProtegePyme RD · Continuidad y seguridad digital
+            </div>
+
+        </section>
+
+
+        <!-- PANEL DERECHO -->
+        <section class="login-form-panel">
+
+            <div class="login-form-wrapper">
+
+                <div class="login-mobile-brand">
+
+                    <div class="login-brand-logo">
+                        P
+                    </div>
+
+                    <strong>
+                        ProtegePyme RD
+                    </strong>
+
+                </div>
+
+                <div class="login-form-header">
+
+                    <span class="login-eyebrow">
+                        ACCESO SEGURO
+                    </span>
+
+                    <h2>
+                        Bienvenido
+                    </h2>
+
+                    <p>
+                        Ingresa tus credenciales para acceder
+                        a ProtegePyme RD.
+                    </p>
+
+                </div>
+
+
+                <form id="account"
+                      method="post"
+                      class="login-form">
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="login-validation text-danger"
+                         role="alert">
+                    </div>
+
+
+                    <!-- EMAIL -->
+                    <div class="login-field">
+
+                        <label asp-for="Input.Email"
+                               class="login-label">
+                            Correo electrónico
+                        </label>
+
+                        <input asp-for="Input.Email"
+                               class="login-input"
+                               autocomplete="username"
+                               aria-required="true"
+                               placeholder="nombre@empresa.com" />
+
+                        <span asp-validation-for="Input.Email"
+                              class="login-field-error">
+                        </span>
+
+                    </div>
+
+
+                    <!-- CONTRASEÑA -->
+                    <div class="login-field">
+
+                        <label asp-for="Input.Password"
+                               class="login-label">
+                            Contraseña
+                        </label>
+
+                        <div class="login-password">
+
+                            <input asp-for="Input.Password"
+                                   id="loginPassword"
+                                   class="login-input"
+                                   autocomplete="current-password"
+                                   aria-required="true"
+                                   placeholder="Ingresa tu contraseña" />
+
+                            <button type="button"
+                                    id="passwordToggle"
+                                    class="password-toggle">
+                                Mostrar
+                            </button>
+
+                        </div>
+
+                        <span asp-validation-for="Input.Password"
+                              class="login-field-error">
+                        </span>
+
+                    </div>
+
+
+                    <!-- RECORDAR -->
+                    <div class="login-options">
+
+                        <label class="login-remember">
+
+                            <input asp-for="Input.RememberMe" />
+
+                            <span>
+                                Mantener sesión iniciada
+                            </span>
+
+                        </label>
+
+                    </div>
+
+
+                    <!-- LOGIN -->
+                    <button id="login-submit"
+                            type="submit"
+                            class="login-submit">
+
+                        Iniciar sesión
+
+                    </button>
+
+
+                    <div class="login-security-message">
+
+                        <span class="login-security-dot"></span>
+
+                        Acceso protegido mediante ASP.NET Core Identity
+
+                    </div>
+
+                </form>
+
+
+                <div class="login-help">
+
+                    <span>
+                        ¿Problemas para acceder?
+                    </span>
+
+                    <p>
+                        Contacta al administrador de ProtegePyme RD.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</div>
+
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const password =
+                document.getElementById("loginPassword");
+
+            const toggle =
+                document.getElementById("passwordToggle");
+
+            if (!password || !toggle) {
+                return;
+            }
+
+            toggle.addEventListener("click", function () {
+
+                const estaOculta =
+                    password.type === "password";
+
+                password.type =
+                    estaOculta ? "text" : "password";
+
+                toggle.textContent =
+                    estaOculta ? "Ocultar" : "Mostrar";
+            });
+
+        });
+    </script>
+}

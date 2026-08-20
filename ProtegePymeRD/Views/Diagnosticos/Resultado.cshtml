@@ -3,30 +3,58 @@
 @{
     ViewData["Title"] = "Resultado ProtegeScore";
 
-    string color = Model.Puntuacion >= 80
-        ? "success"
-        : Model.Puntuacion >= 60
-            ? "warning"
-            : "danger";
+    int puntuacion = Model.Puntuacion;
 
-    int identificar =
-        (Model.TieneInventarioActivos == true ? 10 : 0) +
-        (Model.GestionaVulnerabilidades == true ? 10 : 0);
+    string nivel = puntuacion switch
+    {
+        >= 90 => "Excelente",
+        >= 75 => "Bueno",
+        >= 60 => "Moderado",
+        >= 40 => "Bajo",
+        _ => "Crítico"
+    };
 
-    int proteger =
-        (Model.UtilizaMfa == true ? 10 : 0) +
-        (Model.MantieneActualizaciones == true ? 10 : 0) +
-        (Model.CapacitaEmpleados == true ? 10 : 0);
+    string color = puntuacion switch
+    {
+        >= 90 => "success",
+        >= 75 => "success",
+        >= 60 => "warning",
+        >= 40 => "warning",
+        _ => "danger"
+    };
 
-    int detectarResponder =
-        (Model.MonitoreaAlertas == true ? 10 : 0) +
-        (Model.TienePlanIncidentes == true ? 10 : 0) +
-        (Model.TieneResponsables == true ? 10 : 0);
+    // Áreas del ProtegeScore
 
-    int recuperar =
-        (Model.RealizaRespaldos == true ? 10 : 0) +
-        (Model.PruebaRestauraciones == true ? 10 : 0);
+    int accesos =
+        (Model.UtilizaMfa == true ? 15 : 0) +
+        (Model.GestionaContrasenasAccesos == true ? 10 : 0);
+
+    int proteccion =
+        (Model.TieneProteccionEndpoint == true ? 10 : 0) +
+        (Model.MantieneActualizaciones == true ? 10 : 0);
+
+    int recuperacion =
+        (Model.RealizaRespaldos == true ? 15 : 0) +
+        (Model.PruebaRestauraciones == true ? 15 : 0);
+
+    int personas =
+        Model.CapacitaEmpleados == true
+            ? 10
+            : 0;
+
+    int continuidad =
+        Model.TienePlanContinuidad == true
+            ? 10
+            : 0;
+
+    int activos =
+        Model.TieneInventarioActivos == true
+            ? 5
+            : 0;
+
+    int puntosPendientes = 100 - puntuacion;
 }
+
 
 @if (TempData["MensajeExito"] != null)
 {
@@ -35,265 +63,1176 @@
     </div>
 }
 
-<div class="mb-4">
-    <span class="text-success fw-semibold small">
-        RESULTADO DEL DIAGNÓSTICO
-    </span>
 
-    <h1 class="fw-bold mt-2 mb-2">
-        ProtegeScore
-    </h1>
+<!-- ======================================================
+     CABECERA
+======================================================= -->
 
-    <p class="text-muted">
-        Resultado de seguridad y continuidad digital de
-        <strong class="text-dark">@Model.Empresa?.Nombre</strong>.
-    </p>
+<div class="d-flex flex-column flex-md-row
+            justify-content-between align-items-md-end
+            gap-3 mb-4">
+
+    <div>
+
+        <span class="page-eyebrow">
+            PROTEGESCORE
+        </span>
+
+        <h1 class="page-title">
+            Resultado del diagnóstico
+        </h1>
+
+        <p class="page-description">
+
+            Estado de seguridad y continuidad digital de
+
+            <strong class="text-dark">
+                @Model.Empresa?.Nombre
+            </strong>.
+
+        </p>
+
+    </div>
+
+
+    <a asp-controller="Empresas"
+       asp-action="Details"
+       asp-route-id="@Model.EmpresaId"
+       class="btn btn-light border">
+
+        Volver a la empresa
+
+    </a>
+
 </div>
+
+
+<!-- ======================================================
+     RESULTADO PRINCIPAL
+======================================================= -->
 
 <div class="row g-4 mb-4">
 
+
+    <!-- SCORE -->
+
     <div class="col-lg-4">
-        <div class="card border-@color shadow-sm h-100">
-            <div class="card-body text-center p-5">
 
-                <p class="text-muted mb-2">
-                    Puntuación obtenida
-                </p>
+        <div class="card border-0 shadow-sm h-100">
 
-                <div class="display-1 fw-bold text-@color">
-                    @Model.Puntuacion
-                </div>
+            <div class="card-body text-center p-4 p-xl-5">
 
-                <div class="fs-5 text-muted mb-3">
-                    de 100 puntos
-                </div>
-
-                <span class="badge bg-@color text-white fs-6 px-3 py-2">
-                    @Model.Nivel
+                <span class="text-muted small">
+                    PROTEGESCORE OBTENIDO
                 </span>
 
-                <hr class="my-4" />
 
-                <div class="text-muted small">
-                    Evaluado el
-                    @Model.FechaEvaluacion.ToString("dd/MM/yyyy hh:mm tt")
+                <div class="my-4">
+
+                    <span class="display-1 fw-bold text-@color">
+                        @puntuacion
+                    </span>
+
+                    <span class="text-muted">
+                        /100
+                    </span>
+
                 </div>
 
-                <div class="text-muted small mt-1">
-                    Por: @Model.UsuarioEvaluador
+
+                <span class="badge
+                             bg-@color
+                             text-white
+                             px-3
+                             py-2">
+
+                    @nivel
+
+                </span>
+
+
+                <div class="mt-4 pt-4 border-top">
+
+                    <div class="d-flex
+                                justify-content-between
+                                mb-2">
+
+                        <span class="text-muted small">
+                            Evaluado por
+                        </span>
+
+                        <strong class="small">
+                            @(Model.UsuarioEvaluador ?? "No identificado")
+                        </strong>
+
+                    </div>
+
+
+                    <div class="d-flex
+                                justify-content-between">
+
+                        <span class="text-muted small">
+                            Fecha
+                        </span>
+
+                        <strong class="small">
+
+                            @(Model.FechaEvaluacion
+                                                        .ToString("dd/MM/yyyy hh:mm tt"))
+
+                        </strong>
+
+                    </div>
+
                 </div>
+
             </div>
+
         </div>
+
     </div>
 
+
+    <!-- ÁREAS -->
+
     <div class="col-lg-8">
+
         <div class="card border-0 shadow-sm h-100">
-            <div class="card-body p-4 p-md-5">
+
+            <div class="card-body p-4">
 
                 <h5 class="fw-bold mb-1">
-                    Resultados por área
+                    Cobertura por área
                 </h5>
 
                 <p class="text-muted mb-4">
-                    Distribución de los controles evaluados.
+                    Distribución de los 100 puntos del ProtegeScore.
                 </p>
 
-                <div class="mb-4">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="fw-semibold">Identificar</span>
-                        <span>@identificar / 20</span>
-                    </div>
 
-                    <div class="progress" style="height: 9px;">
-                        <div class="progress-bar bg-success"
-                             style="width: @(identificar * 100 / 20)%">
-                        </div>
-                    </div>
-                </div>
+                <!-- ACCESOS -->
 
                 <div class="mb-4">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="fw-semibold">Proteger</span>
-                        <span>@proteger / 30</span>
-                    </div>
 
-                    <div class="progress" style="height: 9px;">
-                        <div class="progress-bar bg-success"
-                             style="width: @(proteger * 100 / 30)%">
-                        </div>
-                    </div>
-                </div>
+                    <div class="d-flex
+                                justify-content-between
+                                mb-2">
 
-                <div class="mb-4">
-                    <div class="d-flex justify-content-between mb-2">
                         <span class="fw-semibold">
-                            Detectar y responder
+                            Accesos
                         </span>
-                        <span>@detectarResponder / 30</span>
+
+                        <span>
+                            @accesos / 25
+                        </span>
+
                     </div>
 
-                    <div class="progress" style="height: 9px;">
-                        <div class="progress-bar bg-success"
-                             style="width: @(detectarResponder * 100 / 30)%">
+                    <div class="progress"
+                         style="height: 8px;">
+
+                        <div class="progress-bar"
+                             style="width: @(accesos * 100 / 25)%">
                         </div>
+
                     </div>
+
+                    <div class="small text-muted mt-1">
+                        MFA y gestión de contraseñas y privilegios.
+                    </div>
+
                 </div>
+
+
+                <!-- PROTECCIÓN -->
+
+                <div class="mb-4">
+
+                    <div class="d-flex
+                                justify-content-between
+                                mb-2">
+
+                        <span class="fw-semibold">
+                            Protección
+                        </span>
+
+                        <span>
+                            @proteccion / 20
+                        </span>
+
+                    </div>
+
+                    <div class="progress"
+                         style="height: 8px;">
+
+                        <div class="progress-bar"
+                             style="width: @(proteccion * 100 / 20)%">
+                        </div>
+
+                    </div>
+
+                    <div class="small text-muted mt-1">
+                        Endpoint, antivirus y actualizaciones.
+                    </div>
+
+                </div>
+
+
+                <!-- RECUPERACIÓN -->
+
+                <div class="mb-4">
+
+                    <div class="d-flex
+                                justify-content-between
+                                mb-2">
+
+                        <span class="fw-semibold">
+                            Recuperación
+                        </span>
+
+                        <span>
+                            @recuperacion / 30
+                        </span>
+
+                    </div>
+
+                    <div class="progress"
+                         style="height: 8px;">
+
+                        <div class="progress-bar"
+                             style="width: @(recuperacion * 100 / 30)%">
+                        </div>
+
+                    </div>
+
+                    <div class="small text-muted mt-1">
+                        Backups activos y restauraciones comprobadas.
+                    </div>
+
+                </div>
+
+
+                <!-- PERSONAS -->
+
+                <div class="mb-4">
+
+                    <div class="d-flex
+                                justify-content-between
+                                mb-2">
+
+                        <span class="fw-semibold">
+                            Personas
+                        </span>
+
+                        <span>
+                            @personas / 10
+                        </span>
+
+                    </div>
+
+                    <div class="progress"
+                         style="height: 8px;">
+
+                        <div class="progress-bar"
+                             style="width: @(personas * 100 / 10)%">
+                        </div>
+
+                    </div>
+
+                    <div class="small text-muted mt-1">
+                        Capacitación y concientización del personal.
+                    </div>
+
+                </div>
+
+
+                <!-- CONTINUIDAD -->
+
+                <div class="mb-4">
+
+                    <div class="d-flex
+                                justify-content-between
+                                mb-2">
+
+                        <span class="fw-semibold">
+                            Continuidad
+                        </span>
+
+                        <span>
+                            @continuidad / 10
+                        </span>
+
+                    </div>
+
+                    <div class="progress"
+                         style="height: 8px;">
+
+                        <div class="progress-bar"
+                             style="width: @(continuidad * 100 / 10)%">
+                        </div>
+
+                    </div>
+
+                    <div class="small text-muted mt-1">
+                        Preparación y recuperación operativa.
+                    </div>
+
+                </div>
+
+
+                <!-- ACTIVOS -->
 
                 <div>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="fw-semibold">Recuperar</span>
-                        <span>@recuperar / 20</span>
+
+                    <div class="d-flex
+                                justify-content-between
+                                mb-2">
+
+                        <span class="fw-semibold">
+                            Inventario
+                        </span>
+
+                        <span>
+                            @activos / 5
+                        </span>
+
                     </div>
 
-                    <div class="progress" style="height: 9px;">
-                        <div class="progress-bar bg-success"
-                             style="width: @(recuperar * 100 / 20)%">
+                    <div class="progress"
+                         style="height: 8px;">
+
+                        <div class="progress-bar"
+                             style="width: @(activos * 100 / 5)%">
                         </div>
+
                     </div>
+
+                    <div class="small text-muted mt-1">
+                        Inventario actualizado de activos tecnológicos.
+                    </div>
+
                 </div>
 
             </div>
+
         </div>
+
     </div>
 
 </div>
 
+
+<!-- ======================================================
+     CONTROLES
+======================================================= -->
+
 <div class="card border-0 shadow-sm mb-4">
-    <div class="card-body p-4 p-md-5">
+
+    <div class="card-body p-4">
+
+        <div class="d-flex
+                    justify-content-between
+                    align-items-start
+                    flex-wrap
+                    gap-3
+                    mb-4">
+
+            <div>
+
+                <h5 class="fw-bold mb-1">
+                    Controles evaluados
+                </h5>
+
+                <p class="text-muted mb-0">
+                    Resultado individual de cada control del
+                    ProtegeScore.
+                </p>
+
+            </div>
+
+
+            @if (puntosPendientes > 0)
+            {
+                <span class="badge
+                                 bg-primary-subtle
+                                 text-primary
+                                 px-3
+                                 py-2">
+
+                    +@puntosPendientes puntos disponibles
+
+                </span>
+            }
+
+        </div>
+
+
+        <div class="row g-3">
+
+
+            <!-- MFA -->
+
+            <div class="col-md-6">
+
+                <div class="border rounded p-3 h-100">
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-start">
+
+                        <div>
+
+                            <strong>
+                                MFA en cuentas críticas
+                            </strong>
+
+                            <div class="small text-muted mt-1">
+                                Autenticación multifactor
+                            </div>
+
+                        </div>
+
+                        @if (Model.UtilizaMfa == true)
+                        {
+                            <span class="badge bg-success">
+                                +15
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">
+                                Pendiente
+                            </span>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- BACKUPS -->
+
+            <div class="col-md-6">
+
+                <div class="border rounded p-3 h-100">
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-start">
+
+                        <div>
+
+                            <strong>
+                                Backups activos
+                            </strong>
+
+                            <div class="small text-muted mt-1">
+                                Respaldo de información crítica
+                            </div>
+
+                        </div>
+
+                        @if (Model.RealizaRespaldos == true)
+                        {
+                            <span class="badge bg-success">
+                                +15
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">
+                                Pendiente
+                            </span>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RESTAURACIÓN -->
+
+            <div class="col-md-6">
+
+                <div class="border rounded p-3 h-100">
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-start">
+
+                        <div>
+
+                            <strong>
+                                Restauración comprobada
+                            </strong>
+
+                            <div class="small text-muted mt-1">
+                                Recuperación probada
+                            </div>
+
+                        </div>
+
+                        @if (Model.PruebaRestauraciones == true)
+                        {
+                            <span class="badge bg-success">
+                                +15
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">
+                                Pendiente
+                            </span>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ENDPOINT -->
+
+            <div class="col-md-6">
+
+                <div class="border rounded p-3 h-100">
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-start">
+
+                        <div>
+
+                            <strong>
+                                Endpoint / antivirus
+                            </strong>
+
+                            <div class="small text-muted mt-1">
+                                Protección de dispositivos
+                            </div>
+
+                        </div>
+
+                        @if (Model.TieneProteccionEndpoint == true)
+                        {
+                            <span class="badge bg-success">
+                                +10
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">
+                                Pendiente
+                            </span>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ACTUALIZACIONES -->
+
+            <div class="col-md-6">
+
+                <div class="border rounded p-3 h-100">
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-start">
+
+                        <div>
+
+                            <strong>
+                                Actualizaciones
+                            </strong>
+
+                            <div class="small text-muted mt-1">
+                                Sistemas y aplicaciones actualizadas
+                            </div>
+
+                        </div>
+
+                        @if (Model.MantieneActualizaciones == true)
+                        {
+                            <span class="badge bg-success">
+                                +10
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">
+                                Pendiente
+                            </span>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- CONTRASEÑAS -->
+
+            <div class="col-md-6">
+
+                <div class="border rounded p-3 h-100">
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-start">
+
+                        <div>
+
+                            <strong>
+                                Contraseñas y accesos
+                            </strong>
+
+                            <div class="small text-muted mt-1">
+                                Gestión segura de privilegios
+                            </div>
+
+                        </div>
+
+                        @if (Model.GestionaContrasenasAccesos == true)
+                        {
+                            <span class="badge bg-success">
+                                +10
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">
+                                Pendiente
+                            </span>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- CAPACITACIÓN -->
+
+            <div class="col-md-6">
+
+                <div class="border rounded p-3 h-100">
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-start">
+
+                        <div>
+
+                            <strong>
+                                Capacitación
+                            </strong>
+
+                            <div class="small text-muted mt-1">
+                                Concientización del personal
+                            </div>
+
+                        </div>
+
+                        @if (Model.CapacitaEmpleados == true)
+                        {
+                            <span class="badge bg-success">
+                                +10
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">
+                                Pendiente
+                            </span>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- CONTINUIDAD -->
+
+            <div class="col-md-6">
+
+                <div class="border rounded p-3 h-100">
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-start">
+
+                        <div>
+
+                            <strong>
+                                Plan de continuidad
+                            </strong>
+
+                            <div class="small text-muted mt-1">
+                                Recuperación y responsables
+                            </div>
+
+                        </div>
+
+                        @if (Model.TienePlanContinuidad == true)
+                        {
+                            <span class="badge bg-success">
+                                +10
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">
+                                Pendiente
+                            </span>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- INVENTARIO -->
+
+            <div class="col-md-6">
+
+                <div class="border rounded p-3 h-100">
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-start">
+
+                        <div>
+
+                            <strong>
+                                Inventario de activos
+                            </strong>
+
+                            <div class="small text-muted mt-1">
+                                Equipos, sistemas y cuentas
+                            </div>
+
+                        </div>
+
+                        @if (Model.TieneInventarioActivos == true)
+                        {
+                            <span class="badge bg-success">
+                                +5
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">
+                                Pendiente
+                            </span>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ======================================================
+     RECOMENDACIONES
+======================================================= -->
+
+<div class="card border-0 shadow-sm mb-4">
+
+    <div class="card-body p-4">
 
         <h5 class="fw-bold mb-1">
-            Recomendaciones prioritarias
+            Qué debes mejorar ahora
         </h5>
 
         <p class="text-muted mb-4">
-            Acciones sugeridas según las brechas identificadas.
+            Acciones prioritarias según las brechas
+            encontradas durante la evaluación.
         </p>
 
-        @if (Model.Puntuacion == 100)
+
+        @if (puntuacion == 100)
         {
             <div class="alert alert-success mb-0">
-                La empresa cumple todos los controles básicos evaluados.
-                Debe mantenerlos y verificar su efectividad periódicamente.
+
+                La empresa cumple los nueve controles
+                evaluados. Mantén las revisiones,
+                capacitaciones y pruebas de recuperación
+                periódicas.
+
             </div>
         }
         else
         {
-            <div class="list-group">
+            <div class="list-group list-group-flush">
 
-                @if (Model.TieneInventarioActivos != true)
-                {
-                    <div class="list-group-item p-3">
-                        Crear un inventario actualizado de equipos,
-                        sistemas, aplicaciones y cuentas críticas.
-                    </div>
-                }
-
-                @if (Model.GestionaVulnerabilidades != true)
-                {
-                    <div class="list-group-item p-3">
-                        Implementar revisiones periódicas de
-                        vulnerabilidades y aplicar correcciones.
-                    </div>
-                }
 
                 @if (Model.UtilizaMfa != true)
                 {
-                    <div class="list-group-item p-3">
-                        Activar autenticación multifactor en correos,
-                        banca, nube y cuentas administrativas.
+                    <div class="list-group-item px-0 py-3">
+
+                        <div class="d-flex
+                                            justify-content-between
+                                            gap-3">
+
+                            <div>
+
+                                <strong>
+                                    Activar MFA en cuentas críticas
+                                </strong>
+
+                                <div class="text-muted small mt-1">
+                                    Prioriza correo empresarial,
+                                    banca, nube y cuentas administrativas.
+                                </div>
+
+                            </div>
+
+                            <span class="text-primary fw-bold">
+                                +15
+                            </span>
+
+                        </div>
+
                     </div>
                 }
 
-                @if (Model.MantieneActualizaciones != true)
-                {
-                    <div class="list-group-item p-3">
-                        Establecer un calendario para actualizar
-                        equipos y aplicaciones.
-                    </div>
-                }
-
-                @if (Model.CapacitaEmpleados != true)
-                {
-                    <div class="list-group-item p-3">
-                        Capacitar al personal sobre phishing,
-                        fraude e ingeniería social.
-                    </div>
-                }
-
-                @if (Model.MonitoreaAlertas != true)
-                {
-                    <div class="list-group-item p-3">
-                        Configurar monitoreo de alertas y actividades
-                        sospechosas.
-                    </div>
-                }
-
-                @if (Model.TienePlanIncidentes != true)
-                {
-                    <div class="list-group-item p-3">
-                        Documentar un procedimiento de respuesta
-                        ante incidentes.
-                    </div>
-                }
-
-                @if (Model.TieneResponsables != true)
-                {
-                    <div class="list-group-item p-3">
-                        Definir responsables y canales de contacto
-                        para emergencias digitales.
-                    </div>
-                }
 
                 @if (Model.RealizaRespaldos != true)
                 {
-                    <div class="list-group-item p-3">
-                        Implementar respaldos periódicos de la
-                        información crítica.
+                    <div class="list-group-item px-0 py-3">
+
+                        <div class="d-flex
+                                            justify-content-between
+                                            gap-3">
+
+                            <div>
+
+                                <strong>
+                                    Implementar backups activos
+                                </strong>
+
+                                <div class="text-muted small mt-1">
+                                    Protege periódicamente la
+                                    información crítica.
+                                </div>
+
+                            </div>
+
+                            <span class="text-primary fw-bold">
+                                +15
+                            </span>
+
+                        </div>
+
                     </div>
                 }
+
 
                 @if (Model.PruebaRestauraciones != true)
                 {
-                    <div class="list-group-item p-3">
-                        Programar pruebas de restauración para
-                        comprobar que los respaldos funcionan.
+                    <div class="list-group-item px-0 py-3">
+
+                        <div class="d-flex
+                                            justify-content-between
+                                            gap-3">
+
+                            <div>
+
+                                <strong>
+                                    Probar la restauración
+                                </strong>
+
+                                <div class="text-muted small mt-1">
+                                    Confirma que los respaldos
+                                    realmente pueden recuperarse.
+                                </div>
+
+                            </div>
+
+                            <span class="text-primary fw-bold">
+                                +15
+                            </span>
+
+                        </div>
+
                     </div>
                 }
 
-            </div>
-        }
 
-        @if (!string.IsNullOrWhiteSpace(Model.Observaciones))
-        {
-            <div class="mt-4">
-                <h6 class="fw-bold">Observaciones</h6>
-                <p class="text-muted mb-0">
-                    @Model.Observaciones
-                </p>
+                @if (Model.TieneProteccionEndpoint != true)
+                {
+                    <div class="list-group-item px-0 py-3">
+
+                        <div class="d-flex
+                                            justify-content-between
+                                            gap-3">
+
+                            <div>
+
+                                <strong>
+                                    Activar protección endpoint
+                                </strong>
+
+                                <div class="text-muted small mt-1">
+                                    Protege los dispositivos
+                                    frente a malware y otras amenazas.
+                                </div>
+
+                            </div>
+
+                            <span class="text-primary fw-bold">
+                                +10
+                            </span>
+
+                        </div>
+
+                    </div>
+                }
+
+
+                @if (Model.MantieneActualizaciones != true)
+                {
+                    <div class="list-group-item px-0 py-3">
+
+                        <div class="d-flex
+                                            justify-content-between
+                                            gap-3">
+
+                            <div>
+
+                                <strong>
+                                    Mantener sistemas actualizados
+                                </strong>
+
+                                <div class="text-muted small mt-1">
+                                    Instala regularmente parches
+                                    de seguridad y actualizaciones.
+                                </div>
+
+                            </div>
+
+                            <span class="text-primary fw-bold">
+                                +10
+                            </span>
+
+                        </div>
+
+                    </div>
+                }
+
+
+                @if (Model.GestionaContrasenasAccesos != true)
+                {
+                    <div class="list-group-item px-0 py-3">
+
+                        <div class="d-flex
+                                            justify-content-between
+                                            gap-3">
+
+                            <div>
+
+                                <strong>
+                                    Mejorar contraseñas y accesos
+                                </strong>
+
+                                <div class="text-muted small mt-1">
+                                    Aplica contraseñas seguras,
+                                    mínimo privilegio y revisión
+                                    de permisos.
+                                </div>
+
+                            </div>
+
+                            <span class="text-primary fw-bold">
+                                +10
+                            </span>
+
+                        </div>
+
+                    </div>
+                }
+
+
+                @if (Model.CapacitaEmpleados != true)
+                {
+                    <div class="list-group-item px-0 py-3">
+
+                        <div class="d-flex
+                                            justify-content-between
+                                            gap-3">
+
+                            <div>
+
+                                <strong>
+                                    Capacitar al personal
+                                </strong>
+
+                                <div class="text-muted small mt-1">
+                                    Refuerza conocimientos de
+                                    phishing, fraude e ingeniería social.
+                                </div>
+
+                            </div>
+
+                            <span class="text-primary fw-bold">
+                                +10
+                            </span>
+
+                        </div>
+
+                    </div>
+                }
+
+
+                @if (Model.TienePlanContinuidad != true)
+                {
+                    <div class="list-group-item px-0 py-3">
+
+                        <div class="d-flex
+                                            justify-content-between
+                                            gap-3">
+
+                            <div>
+
+                                <strong>
+                                    Crear un plan de continuidad
+                                </strong>
+
+                                <div class="text-muted small mt-1">
+                                    Define responsables, prioridades
+                                    y procedimientos de recuperación.
+                                </div>
+
+                            </div>
+
+                            <span class="text-primary fw-bold">
+                                +10
+                            </span>
+
+                        </div>
+
+                    </div>
+                }
+
+
+                @if (Model.TieneInventarioActivos != true)
+                {
+                    <div class="list-group-item px-0 py-3">
+
+                        <div class="d-flex
+                                            justify-content-between
+                                            gap-3">
+
+                            <div>
+
+                                <strong>
+                                    Crear inventario de activos
+                                </strong>
+
+                                <div class="text-muted small mt-1">
+                                    Identifica equipos, sistemas,
+                                    cuentas y recursos importantes.
+                                </div>
+
+                            </div>
+
+                            <span class="text-primary fw-bold">
+                                +5
+                            </span>
+
+                        </div>
+
+                    </div>
+                }
+
             </div>
         }
 
     </div>
+
 </div>
 
-<div class="d-flex flex-wrap justify-content-end gap-2 mb-5">
 
-    <a asp-controller="Home"
-       asp-action="Index"
-       class="btn btn-light">
-        Ir al panel
-    </a>
+<!-- ======================================================
+     OBSERVACIONES
+======================================================= -->
+@if (!string.IsNullOrWhiteSpace(Model.Observaciones))
+{
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-body p-4">
+
+            <h5 class="fw-bold mb-2">
+                Observaciones
+            </h5>
+
+            <p class="text-muted mb-0">
+                @Model.Observaciones
+            </p>
+
+        </div>
+
+    </div>
+}
+
+
+<!-- ======================================================
+     ACCIONES
+======================================================= -->
+
+<div class="d-flex
+            flex-wrap
+            justify-content-end
+            gap-2
+            mb-5">
 
     <a asp-controller="Empresas"
-       asp-action="Index"
-       class="btn btn-outline-success">
-        Ver empresas
+       asp-action="Details"
+       asp-route-id="@Model.EmpresaId"
+       class="btn btn-light border">
+
+        Volver a la empresa
+
     </a>
+
+
+    <a asp-action="Historial"
+       asp-route-empresaId="@Model.EmpresaId"
+       class="btn btn-outline-primary">
+
+        Ver historial
+
+    </a>
+
 
     <a asp-action="Create"
        asp-route-empresaId="@Model.EmpresaId"
-       class="btn btn-success">
-        Realizar otra evaluación
+       class="btn btn-primary">
+
+        Nueva evaluación
+
     </a>
 
 </div>

@@ -4,7 +4,7 @@ using ProtegePymeRD.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configuración de SQL Server
+// Configuraciï¿½n de SQL Server
 var connectionString =
     builder.Configuration.GetConnectionString(
         "DefaultConnection")
@@ -17,7 +17,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services
     .AddDatabaseDeveloperPageExceptionFilter();
 
-// Configuración de Identity y roles
+// Configuraciï¿½n de Identity y roles
 builder.Services
     .AddDefaultIdentity<IdentityUser>(options =>
     {
@@ -121,13 +121,13 @@ using (var scope = app.Services.CreateScope())
     else
     {
         Console.WriteLine(
-            "No se encontró el usuario " +
+            "No se encontrï¿½ el usuario " +
             $"{correoAdministrador}. " +
-            "El rol se asignará cuando el usuario exista.");
+            "El rol se asignarï¿½ cuando el usuario exista.");
     }
 }
 
-// Configuración del pipeline HTTP
+// Configuraciï¿½n del pipeline HTTP
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();

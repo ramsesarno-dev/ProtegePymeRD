@@ -4,470 +4,1056 @@
     ViewData["Title"] = "Nuevo diagnóstico";
 }
 
-<div class="row justify-content-center">
-    <div class="col-xl-9">
+<div class="diagnostic-page">
 
-        <div class="mb-4">
-            <span class="text-success fw-semibold small">
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
+
+    <div class="diagnostic-header">
+
+        <div>
+
+            <a asp-controller="Empresas"
+               asp-action="Details"
+               asp-route-id="@Model.EmpresaId"
+               class="diagnostic-back">
+
+                ← Volver a la empresa
+
+            </a>
+
+            <span class="page-eyebrow mt-3">
                 PROTEGESCORE
             </span>
 
-            <h1 class="fw-bold mt-2 mb-2">
+            <h1 class="page-title">
                 Diagnóstico de seguridad
             </h1>
 
-            <p class="text-muted mb-1">
-                Empresa evaluada:
+            <p class="page-description">
+
+                Evalúa los controles esenciales de
+
                 <strong class="text-dark">
                     @ViewBag.EmpresaNombre
                 </strong>
+
+                para obtener su nivel actual de protección.
+
             </p>
 
-            <p class="text-muted">
-                Responde las diez preguntas según la situación
-                actual de la empresa.
-            </p>
         </div>
 
-        <form asp-action="Create"
-              method="post"
-              id="diagnosticoForm">
-            <input asp-for="EmpresaId" type="hidden" />
+    </div>
 
-            <div asp-validation-summary="ModelOnly"
-                 class="alert alert-danger">
-            </div>
 
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body p-4 p-md-5">
+    <form asp-action="Create"
+          method="post"
+          id="diagnosticoForm">
 
-                    <h5 class="fw-bold mb-1">
-                        Identificar
-                    </h5>
+        <input asp-for="EmpresaId"
+               type="hidden" />
 
-                    <p class="text-muted mb-4">
-                        Conocimiento de activos y vulnerabilidades.
-                    </p>
 
-                    <div class="border rounded p-4 mb-3">
-                        <div class="fw-semibold">
-                            1.
-                            <label asp-for="TieneInventarioActivos"></label>
+        <div asp-validation-summary="ModelOnly"
+             class="alert alert-danger">
+        </div>
+
+
+        <div class="row g-4 align-items-start">
+
+
+            <!-- =================================================
+                 PREGUNTAS
+            ================================================== -->
+
+            <div class="col-xl-8">
+
+
+                <!-- 1 MFA -->
+
+                <div class="diagnostic-control"
+                     data-points="15">
+
+                    <div class="diagnostic-control-number">
+                        01
+                    </div>
+
+                    <div class="diagnostic-control-content">
+
+                        <div class="diagnostic-control-heading">
+
+                            <div>
+
+                                <span class="diagnostic-category">
+                                    ACCESOS
+                                </span>
+
+                                <h2>
+                                    MFA en cuentas críticas
+                                </h2>
+
+                            </div>
+
+                            <span class="diagnostic-points">
+                                15 puntos
+                            </span>
+
                         </div>
 
-                        <div class="d-flex gap-4 mt-3">
-                            <div class="form-check">
-                                <input asp-for="TieneInventarioActivos"
-                                       type="radio"
-                                       value="true"
-                                       id="inventarioSi"
-                                       class="form-check-input" />
+                        <p class="diagnostic-question">
+                            @Html.DisplayNameFor(
+                            model => model.UtilizaMfa)
+                        </p>
 
-                                <label for="inventarioSi"
-                                       class="form-check-label">
+
+                        <div class="diagnostic-options">
+
+                            <label class="diagnostic-option">
+
+                                <input asp-for="UtilizaMfa"
+                                       type="radio"
+                                       value="true" />
+
+                                <span>
                                     Sí
-                                </label>
+                                </span>
+
+                            </label>
+
+
+                            <label class="diagnostic-option">
+
+                                <input asp-for="UtilizaMfa"
+                                       type="radio"
+                                       value="false" />
+
+                                <span>
+                                    No
+                                </span>
+
+                            </label>
+
+                        </div>
+
+                        <span asp-validation-for="UtilizaMfa"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- 2 BACKUPS -->
+
+                <div class="diagnostic-control"
+                     data-points="15">
+
+                    <div class="diagnostic-control-number">
+                        02
+                    </div>
+
+                    <div class="diagnostic-control-content">
+
+                        <div class="diagnostic-control-heading">
+
+                            <div>
+
+                                <span class="diagnostic-category">
+                                    RECUPERACIÓN
+                                </span>
+
+                                <h2>
+                                    Backups activos
+                                </h2>
+
                             </div>
 
-                            <div class="form-check">
+                            <span class="diagnostic-points">
+                                15 puntos
+                            </span>
+
+                        </div>
+
+                        <p class="diagnostic-question">
+                            @Html.DisplayNameFor(
+                                                        model => model.RealizaRespaldos)
+                        </p>
+
+                        <div class="diagnostic-options">
+
+                            <label class="diagnostic-option">
+
+                                <input asp-for="RealizaRespaldos"
+                                       type="radio"
+                                       value="true" />
+
+                                <span>Sí</span>
+
+                            </label>
+
+                            <label class="diagnostic-option">
+
+                                <input asp-for="RealizaRespaldos"
+                                       type="radio"
+                                       value="false" />
+
+                                <span>No</span>
+
+                            </label>
+
+                        </div>
+
+                        <span asp-validation-for="RealizaRespaldos"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- 3 RESTAURACIÓN -->
+
+                <div class="diagnostic-control"
+                     data-points="15">
+
+                    <div class="diagnostic-control-number">
+                        03
+                    </div>
+
+                    <div class="diagnostic-control-content">
+
+                        <div class="diagnostic-control-heading">
+
+                            <div>
+
+                                <span class="diagnostic-category">
+                                    RECUPERACIÓN
+                                </span>
+
+                                <h2>
+                                    Restauración comprobada
+                                </h2>
+
+                            </div>
+
+                            <span class="diagnostic-points">
+                                15 puntos
+                            </span>
+
+                        </div>
+
+                        <p class="diagnostic-question">
+                            @Html.DisplayNameFor(
+                                                        model => model.PruebaRestauraciones)
+                        </p>
+
+                        <div class="diagnostic-options">
+
+                            <label class="diagnostic-option">
+
+                                <input asp-for="PruebaRestauraciones"
+                                       type="radio"
+                                       value="true" />
+
+                                <span>Sí</span>
+
+                            </label>
+
+                            <label class="diagnostic-option">
+
+                                <input asp-for="PruebaRestauraciones"
+                                       type="radio"
+                                       value="false" />
+
+                                <span>No</span>
+
+                            </label>
+
+                        </div>
+
+                        <span asp-validation-for="PruebaRestauraciones"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- 4 ENDPOINT -->
+
+                <div class="diagnostic-control"
+                     data-points="10">
+
+                    <div class="diagnostic-control-number">
+                        04
+                    </div>
+
+                    <div class="diagnostic-control-content">
+
+                        <div class="diagnostic-control-heading">
+
+                            <div>
+
+                                <span class="diagnostic-category">
+                                    PROTECCIÓN
+                                </span>
+
+                                <h2>
+                                    Endpoint / antivirus
+                                </h2>
+
+                            </div>
+
+                            <span class="diagnostic-points">
+                                10 puntos
+                            </span>
+
+                        </div>
+
+                        <p class="diagnostic-question">
+                            @Html.DisplayNameFor(
+                                                        model => model.TieneProteccionEndpoint)
+                        </p>
+
+                        <div class="diagnostic-options">
+
+                            <label class="diagnostic-option">
+
+                                <input asp-for="TieneProteccionEndpoint"
+                                       type="radio"
+                                       value="true" />
+
+                                <span>Sí</span>
+
+                            </label>
+
+                            <label class="diagnostic-option">
+
+                                <input asp-for="TieneProteccionEndpoint"
+                                       type="radio"
+                                       value="false" />
+
+                                <span>No</span>
+
+                            </label>
+
+                        </div>
+
+                        <span asp-validation-for="TieneProteccionEndpoint"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- 5 ACTUALIZACIONES -->
+
+                <div class="diagnostic-control"
+                     data-points="10">
+
+                    <div class="diagnostic-control-number">
+                        05
+                    </div>
+
+                    <div class="diagnostic-control-content">
+
+                        <div class="diagnostic-control-heading">
+
+                            <div>
+
+                                <span class="diagnostic-category">
+                                    PROTECCIÓN
+                                </span>
+
+                                <h2>
+                                    Actualizaciones
+                                </h2>
+
+                            </div>
+
+                            <span class="diagnostic-points">
+                                10 puntos
+                            </span>
+
+                        </div>
+
+                        <p class="diagnostic-question">
+                            @Html.DisplayNameFor(
+                                                        model => model.MantieneActualizaciones)
+                        </p>
+
+                        <div class="diagnostic-options">
+
+                            <label class="diagnostic-option">
+
+                                <input asp-for="MantieneActualizaciones"
+                                       type="radio"
+                                       value="true" />
+
+                                <span>Sí</span>
+
+                            </label>
+
+                            <label class="diagnostic-option">
+
+                                <input asp-for="MantieneActualizaciones"
+                                       type="radio"
+                                       value="false" />
+
+                                <span>No</span>
+
+                            </label>
+
+                        </div>
+
+                        <span asp-validation-for="MantieneActualizaciones"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- 6 CONTRASEÑAS -->
+
+                <div class="diagnostic-control"
+                     data-points="10">
+
+                    <div class="diagnostic-control-number">
+                        06
+                    </div>
+
+                    <div class="diagnostic-control-content">
+
+                        <div class="diagnostic-control-heading">
+
+                            <div>
+
+                                <span class="diagnostic-category">
+                                    ACCESOS
+                                </span>
+
+                                <h2>
+                                    Contraseñas y accesos
+                                </h2>
+
+                            </div>
+
+                            <span class="diagnostic-points">
+                                10 puntos
+                            </span>
+
+                        </div>
+
+                        <p class="diagnostic-question">
+                            @Html.DisplayNameFor(
+                                                        model => model.GestionaContrasenasAccesos)
+                        </p>
+
+                        <div class="diagnostic-options">
+
+                            <label class="diagnostic-option">
+
+                                <input asp-for="GestionaContrasenasAccesos"
+                                       type="radio"
+                                       value="true" />
+
+                                <span>Sí</span>
+
+                            </label>
+
+                            <label class="diagnostic-option">
+
+                                <input asp-for="GestionaContrasenasAccesos"
+                                       type="radio"
+                                       value="false" />
+
+                                <span>No</span>
+
+                            </label>
+
+                        </div>
+
+                        <span asp-validation-for="GestionaContrasenasAccesos"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- 7 CAPACITACIÓN -->
+
+                <div class="diagnostic-control"
+                     data-points="10">
+
+                    <div class="diagnostic-control-number">
+                        07
+                    </div>
+
+                    <div class="diagnostic-control-content">
+
+                        <div class="diagnostic-control-heading">
+
+                            <div>
+
+                                <span class="diagnostic-category">
+                                    PERSONAS
+                                </span>
+
+                                <h2>
+                                    Capacitación
+                                </h2>
+
+                            </div>
+
+                            <span class="diagnostic-points">
+                                10 puntos
+                            </span>
+
+                        </div>
+
+                        <p class="diagnostic-question">
+                            @Html.DisplayNameFor(
+                                                        model => model.CapacitaEmpleados)
+                        </p>
+
+                        <div class="diagnostic-options">
+
+                            <label class="diagnostic-option">
+
+                                <input asp-for="CapacitaEmpleados"
+                                       type="radio"
+                                       value="true" />
+
+                                <span>Sí</span>
+
+                            </label>
+
+                            <label class="diagnostic-option">
+
+                                <input asp-for="CapacitaEmpleados"
+                                       type="radio"
+                                       value="false" />
+
+                                <span>No</span>
+
+                            </label>
+
+                        </div>
+
+                        <span asp-validation-for="CapacitaEmpleados"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- 8 CONTINUIDAD -->
+
+                <div class="diagnostic-control"
+                     data-points="10">
+
+                    <div class="diagnostic-control-number">
+                        08
+                    </div>
+
+                    <div class="diagnostic-control-content">
+
+                        <div class="diagnostic-control-heading">
+
+                            <div>
+
+                                <span class="diagnostic-category">
+                                    CONTINUIDAD
+                                </span>
+
+                                <h2>
+                                    Plan de continuidad
+                                </h2>
+
+                            </div>
+
+                            <span class="diagnostic-points">
+                                10 puntos
+                            </span>
+
+                        </div>
+
+                        <p class="diagnostic-question">
+                            @Html.DisplayNameFor(
+                                                        model => model.TienePlanContinuidad)
+                        </p>
+
+                        <div class="diagnostic-options">
+
+                            <label class="diagnostic-option">
+
+                                <input asp-for="TienePlanContinuidad"
+                                       type="radio"
+                                       value="true" />
+
+                                <span>Sí</span>
+
+                            </label>
+
+                            <label class="diagnostic-option">
+
+                                <input asp-for="TienePlanContinuidad"
+                                       type="radio"
+                                       value="false" />
+
+                                <span>No</span>
+
+                            </label>
+
+                        </div>
+
+                        <span asp-validation-for="TienePlanContinuidad"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- 9 INVENTARIO -->
+
+                <div class="diagnostic-control"
+                     data-points="5">
+
+                    <div class="diagnostic-control-number">
+                        09
+                    </div>
+
+                    <div class="diagnostic-control-content">
+
+                        <div class="diagnostic-control-heading">
+
+                            <div>
+
+                                <span class="diagnostic-category">
+                                    ACTIVOS
+                                </span>
+
+                                <h2>
+                                    Inventario de activos
+                                </h2>
+
+                            </div>
+
+                            <span class="diagnostic-points">
+                                5 puntos
+                            </span>
+
+                        </div>
+
+                        <p class="diagnostic-question">
+                            @Html.DisplayNameFor(
+                                                        model => model.TieneInventarioActivos)
+                        </p>
+
+                        <div class="diagnostic-options">
+
+                            <label class="diagnostic-option">
+
                                 <input asp-for="TieneInventarioActivos"
                                        type="radio"
-                                       value="false"
-                                       id="inventarioNo"
-                                       class="form-check-input" />
+                                       value="true" />
 
-                                <label for="inventarioNo"
-                                       class="form-check-label">
-                                    No
-                                </label>
-                            </div>
+                                <span>Sí</span>
+
+                            </label>
+
+                            <label class="diagnostic-option">
+
+                                <input asp-for="TieneInventarioActivos"
+                                       type="radio"
+                                       value="false" />
+
+                                <span>No</span>
+
+                            </label>
+
                         </div>
 
                         <span asp-validation-for="TieneInventarioActivos"
                               class="text-danger small">
                         </span>
-                    </div>
 
-                    <div class="border rounded p-4">
-                        <div class="fw-semibold">
-                            2.
-                            <label asp-for="GestionaVulnerabilidades"></label>
-                        </div>
-
-                        <div class="d-flex gap-4 mt-3">
-                            <div class="form-check">
-                                <input asp-for="GestionaVulnerabilidades"
-                                       type="radio"
-                                       value="true"
-                                       id="vulnerabilidadesSi"
-                                       class="form-check-input" />
-
-                                <label for="vulnerabilidadesSi"
-                                       class="form-check-label">
-                                    Sí
-                                </label>
-                            </div>
-
-                            <div class="form-check">
-                                <input asp-for="GestionaVulnerabilidades"
-                                       type="radio"
-                                       value="false"
-                                       id="vulnerabilidadesNo"
-                                       class="form-check-input" />
-
-                                <label for="vulnerabilidadesNo"
-                                       class="form-check-label">
-                                    No
-                                </label>
-                            </div>
-                        </div>
-
-                        <span asp-validation-for="GestionaVulnerabilidades"
-                              class="text-danger small">
-                        </span>
                     </div>
 
                 </div>
-            </div>
 
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body p-4 p-md-5">
 
-                    <h5 class="fw-bold mb-1">
-                        Proteger
-                    </h5>
+                <!-- OBSERVACIONES -->
 
-                    <p class="text-muted mb-4">
-                        Controles para reducir la posibilidad de incidentes.
-                    </p>
+                <div class="diagnostic-notes">
 
-                    <div class="border rounded p-4 mb-3">
-                        <div class="fw-semibold">
-                            3.
-                            <label asp-for="UtilizaMfa"></label>
-                        </div>
-
-                        <div class="d-flex gap-4 mt-3">
-                            <div class="form-check">
-                                <input asp-for="UtilizaMfa"
-                                       type="radio"
-                                       value="true"
-                                       id="mfaSi"
-                                       class="form-check-input" />
-                                <label for="mfaSi">Sí</label>
-                            </div>
-
-                            <div class="form-check">
-                                <input asp-for="UtilizaMfa"
-                                       type="radio"
-                                       value="false"
-                                       id="mfaNo"
-                                       class="form-check-input" />
-                                <label for="mfaNo">No</label>
-                            </div>
-                        </div>
-
-                        <span asp-validation-for="UtilizaMfa"
-                              class="text-danger small"></span>
-                    </div>
-
-                    <div class="border rounded p-4 mb-3">
-                        <div class="fw-semibold">
-                            4.
-                            <label asp-for="MantieneActualizaciones"></label>
-                        </div>
-
-                        <div class="d-flex gap-4 mt-3">
-                            <div class="form-check">
-                                <input asp-for="MantieneActualizaciones"
-                                       type="radio"
-                                       value="true"
-                                       id="actualizacionesSi"
-                                       class="form-check-input" />
-                                <label for="actualizacionesSi">Sí</label>
-                            </div>
-
-                            <div class="form-check">
-                                <input asp-for="MantieneActualizaciones"
-                                       type="radio"
-                                       value="false"
-                                       id="actualizacionesNo"
-                                       class="form-check-input" />
-                                <label for="actualizacionesNo">No</label>
-                            </div>
-                        </div>
-
-                        <span asp-validation-for="MantieneActualizaciones"
-                              class="text-danger small"></span>
-                    </div>
-
-                    <div class="border rounded p-4">
-                        <div class="fw-semibold">
-                            5.
-                            <label asp-for="CapacitaEmpleados"></label>
-                        </div>
-
-                        <div class="d-flex gap-4 mt-3">
-                            <div class="form-check">
-                                <input asp-for="CapacitaEmpleados"
-                                       type="radio"
-                                       value="true"
-                                       id="capacitacionSi"
-                                       class="form-check-input" />
-                                <label for="capacitacionSi">Sí</label>
-                            </div>
-
-                            <div class="form-check">
-                                <input asp-for="CapacitaEmpleados"
-                                       type="radio"
-                                       value="false"
-                                       id="capacitacionNo"
-                                       class="form-check-input" />
-                                <label for="capacitacionNo">No</label>
-                            </div>
-                        </div>
-
-                        <span asp-validation-for="CapacitaEmpleados"
-                              class="text-danger small"></span>
-                    </div>
-
-                </div>
-            </div>
-
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body p-4 p-md-5">
-
-                    <h5 class="fw-bold mb-4">
-                        Detectar y responder
-                    </h5>
-
-                    <div class="border rounded p-4 mb-3">
-                        <div class="fw-semibold">
-                            6.
-                            <label asp-for="MonitoreaAlertas"></label>
-                        </div>
-
-                        <div class="d-flex gap-4 mt-3">
-                            <div class="form-check">
-                                <input asp-for="MonitoreaAlertas"
-                                       type="radio"
-                                       value="true"
-                                       id="alertasSi"
-                                       class="form-check-input" />
-                                <label for="alertasSi">Sí</label>
-                            </div>
-
-                            <div class="form-check">
-                                <input asp-for="MonitoreaAlertas"
-                                       type="radio"
-                                       value="false"
-                                       id="alertasNo"
-                                       class="form-check-input" />
-                                <label for="alertasNo">No</label>
-                            </div>
-                        </div>
-
-                        <span asp-validation-for="MonitoreaAlertas"
-                              class="text-danger small"></span>
-                    </div>
-
-                    <div class="border rounded p-4 mb-3">
-                        <div class="fw-semibold">
-                            7.
-                            <label asp-for="TienePlanIncidentes"></label>
-                        </div>
-
-                        <div class="d-flex gap-4 mt-3">
-                            <div class="form-check">
-                                <input asp-for="TienePlanIncidentes"
-                                       type="radio"
-                                       value="true"
-                                       id="incidentesSi"
-                                       class="form-check-input" />
-                                <label for="incidentesSi">Sí</label>
-                            </div>
-
-                            <div class="form-check">
-                                <input asp-for="TienePlanIncidentes"
-                                       type="radio"
-                                       value="false"
-                                       id="incidentesNo"
-                                       class="form-check-input" />
-                                <label for="incidentesNo">No</label>
-                            </div>
-                        </div>
-
-                        <span asp-validation-for="TienePlanIncidentes"
-                              class="text-danger small"></span>
-                    </div>
-
-                    <div class="border rounded p-4">
-                        <div class="fw-semibold">
-                            8.
-                            <label asp-for="TieneResponsables"></label>
-                        </div>
-
-                        <div class="d-flex gap-4 mt-3">
-                            <div class="form-check">
-                                <input asp-for="TieneResponsables"
-                                       type="radio"
-                                       value="true"
-                                       id="responsablesSi"
-                                       class="form-check-input" />
-                                <label for="responsablesSi">Sí</label>
-                            </div>
-
-                            <div class="form-check">
-                                <input asp-for="TieneResponsables"
-                                       type="radio"
-                                       value="false"
-                                       id="responsablesNo"
-                                       class="form-check-input" />
-                                <label for="responsablesNo">No</label>
-                            </div>
-                        </div>
-
-                        <span asp-validation-for="TieneResponsables"
-                              class="text-danger small"></span>
-                    </div>
-
-                </div>
-            </div>
-
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body p-4 p-md-5">
-
-                    <h5 class="fw-bold mb-4">
-                        Recuperar
-                    </h5>
-
-                    <div class="border rounded p-4 mb-3">
-                        <div class="fw-semibold">
-                            9.
-                            <label asp-for="RealizaRespaldos"></label>
-                        </div>
-
-                        <div class="d-flex gap-4 mt-3">
-                            <div class="form-check">
-                                <input asp-for="RealizaRespaldos"
-                                       type="radio"
-                                       value="true"
-                                       id="respaldosSi"
-                                       class="form-check-input" />
-                                <label for="respaldosSi">Sí</label>
-                            </div>
-
-                            <div class="form-check">
-                                <input asp-for="RealizaRespaldos"
-                                       type="radio"
-                                       value="false"
-                                       id="respaldosNo"
-                                       class="form-check-input" />
-                                <label for="respaldosNo">No</label>
-                            </div>
-                        </div>
-
-                        <span asp-validation-for="RealizaRespaldos"
-                              class="text-danger small"></span>
-                    </div>
-
-                    <div class="border rounded p-4">
-                        <div class="fw-semibold">
-                            10.
-                            <label asp-for="PruebaRestauraciones"></label>
-                        </div>
-
-                        <div class="d-flex gap-4 mt-3">
-                            <div class="form-check">
-                                <input asp-for="PruebaRestauraciones"
-                                       type="radio"
-                                       value="true"
-                                       id="restauracionesSi"
-                                       class="form-check-input" />
-                                <label for="restauracionesSi">Sí</label>
-                            </div>
-
-                            <div class="form-check">
-                                <input asp-for="PruebaRestauraciones"
-                                       type="radio"
-                                       value="false"
-                                       id="restauracionesNo"
-                                       class="form-check-input" />
-                                <label for="restauracionesNo">No</label>
-                            </div>
-                        </div>
-
-                        <span asp-validation-for="PruebaRestauraciones"
-                              class="text-danger small"></span>
-                    </div>
-
-                </div>
-            </div>
-
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body p-4">
                     <label asp-for="Observaciones"
-                           class="form-label fw-semibold"></label>
+                           class="form-label fw-semibold">
+                    </label>
 
                     <textarea asp-for="Observaciones"
                               class="form-control"
                               rows="4"
-                              placeholder="Agrega hallazgos o comentarios opcionales">
+                              placeholder="Hallazgos, contexto o recomendaciones adicionales...">
                     </textarea>
 
                     <span asp-validation-for="Observaciones"
-                          class="text-danger small"></span>
+                          class="text-danger small">
+                    </span>
+
                 </div>
+
             </div>
 
-            <div class="d-flex justify-content-end gap-2 mb-5">
-                <a asp-controller="Empresas"
-                   asp-action="Index"
-                   class="btn btn-light px-4">
-                    Cancelar
-                </a>
+
+            <!-- =================================================
+                 RESUMEN STICKY
+            ================================================== -->
+
+            <div class="col-xl-4">
+
+                <div class="diagnostic-summary">
+
+                    <span class="panel-eyebrow">
+                        RESULTADO ESTIMADO
+                    </span>
+
+                    <h2>
+                        ProtegeScore
+                    </h2>
+
+                    <p>
+                        La puntuación se actualiza mientras
+                        completas la evaluación.
+                    </p>
+
+
+                    <div class="diagnostic-score-circle"
+                         id="scoreCircle">
+
+                        <div>
+
+                            <strong id="scoreValue">
+                                0
+                            </strong>
+
+                            <span>
+                                /100
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="diagnostic-score-status"
+                         id="scoreStatus">
+
+                        Crítico
+
+                    </div>
+
+
+                    <div class="diagnostic-score-progress">
+
+                        <div id="scoreProgress"
+                             style="width: 0%;">
+                        </div>
+
+                    </div>
+
+
+                    <div class="diagnostic-completion">
+
+                        <div>
+
+                            <span>
+                                Controles respondidos
+                            </span>
+
+                            <strong id="answeredCount">
+                                0 / 9
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="diagnostic-score-legend">
+
+                        <div>
+                            <span class="legend-dot legend-excellent"></span>
+                            90-100 Excelente
+                        </div>
+
+                        <div>
+                            <span class="legend-dot legend-good"></span>
+                            75-89 Bueno
+                        </div>
+
+                        <div>
+                            <span class="legend-dot legend-medium"></span>
+                            60-74 Moderado
+                        </div>
+
+                        <div>
+                            <span class="legend-dot legend-low"></span>
+                            40-59 Bajo
+                        </div>
+
+                        <div>
+                            <span class="legend-dot legend-critical"></span>
+                            0-39 Crítico
+                        </div>
+
+                    </div>
+
+
+                    <button type="submit"
+                            id="btnCalcular"
+                            class="btn btn-primary w-100 mt-4">
+
+                        Finalizar diagnóstico
+
+                    </button>
+
+
+                    <a asp-controller="Empresas"
+                       asp-action="Details"
+                       asp-route-id="@Model.EmpresaId"
+                       class="btn btn-light border w-100 mt-2">
+
+                        Cancelar
+
+                    </a>
+
+                </div>
+
             </div>
 
-                <button type="submit"
-                        id="btnCalcular"
-                        class="btn btn-success px-4">
-                    Calcular ProtegeScore
-                </button>
+        </div>
 
-        </form>
-    </div>
+    </form>
+
 </div>
 
+
 @section Scripts {
+
     @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        await Html.RenderPartialAsync(
+            "_ValidationScriptsPartial");
     }
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const formulario =
-                document.getElementById("diagnosticoForm");
 
-            const boton =
-                document.getElementById("btnCalcular");
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
 
-            let enviando = false;
+                const controls =
+                    document.querySelectorAll(
+                        ".diagnostic-control");
 
-            formulario.addEventListener("submit", function (event) {
-                if (enviando) {
-                    event.preventDefault();
-                    return;
+                const scoreValue =
+                    document.getElementById(
+                        "scoreValue");
+
+                const scoreStatus =
+                    document.getElementById(
+                        "scoreStatus");
+
+                const scoreProgress =
+                    document.getElementById(
+                        "scoreProgress");
+
+                const scoreCircle =
+                    document.getElementById(
+                        "scoreCircle");
+
+                const answeredCount =
+                    document.getElementById(
+                        "answeredCount");
+
+                const form =
+                    document.getElementById(
+                        "diagnosticoForm");
+
+                const button =
+                    document.getElementById(
+                        "btnCalcular");
+
+
+                function updateScore() {
+
+                    let score = 0;
+                    let answered = 0;
+
+
+                    controls.forEach(control => {
+
+                        const selected =
+                            control.querySelector(
+                                "input[type='radio']:checked");
+
+                        if (!selected) {
+                            return;
+                        }
+
+                        answered++;
+
+                        if (selected.value === "true") {
+
+                            score += parseInt(
+                                control.dataset.points);
+                        }
+
+                    });
+
+
+                    scoreValue.textContent =
+                        score;
+
+                    answeredCount.textContent =
+                        answered + " / 9";
+
+                    scoreProgress.style.width =
+                        score + "%";
+
+
+                    scoreCircle.className =
+                        "diagnostic-score-circle";
+
+                    scoreStatus.className =
+                        "diagnostic-score-status";
+
+
+                    if (score >= 90) {
+
+                        scoreStatus.textContent =
+                            "Excelente";
+
+                        scoreCircle.classList.add(
+                            "diagnostic-score-excellent");
+
+                        scoreStatus.classList.add(
+                            "diagnostic-score-excellent");
+
+                    }
+                    else if (score >= 75) {
+
+                        scoreStatus.textContent =
+                            "Bueno";
+
+                        scoreCircle.classList.add(
+                            "diagnostic-score-good");
+
+                        scoreStatus.classList.add(
+                            "diagnostic-score-good");
+
+                    }
+                    else if (score >= 60) {
+
+                        scoreStatus.textContent =
+                            "Moderado";
+
+                        scoreCircle.classList.add(
+                            "diagnostic-score-medium");
+
+                        scoreStatus.classList.add(
+                            "diagnostic-score-medium");
+
+                    }
+                    else if (score >= 40) {
+
+                        scoreStatus.textContent =
+                            "Bajo";
+
+                        scoreCircle.classList.add(
+                            "diagnostic-score-low");
+
+                        scoreStatus.classList.add(
+                            "diagnostic-score-low");
+
+                    }
+                    else {
+
+                        scoreStatus.textContent =
+                            "Crítico";
+
+                        scoreCircle.classList.add(
+                            "diagnostic-score-critical");
+
+                        scoreStatus.classList.add(
+                            "diagnostic-score-critical");
+                    }
+
                 }
 
-                if (typeof window.jQuery !== "undefined"
-                    && !$(formulario).valid()) {
-                    return;
-                }
 
-                enviando = true;
-                boton.disabled = true;
-                boton.textContent = "Calculando...";
+                document.querySelectorAll(
+                    ".diagnostic-control input[type='radio']")
+                    .forEach(input => {
+
+                        input.addEventListener(
+                            "change",
+                            updateScore);
+
+                    });
+
+
+                let sending = false;
+
+
+                form.addEventListener(
+                    "submit",
+                    function (event) {
+
+                        if (sending) {
+
+                            event.preventDefault();
+                            return;
+                        }
+
+
+                        if (
+                            typeof window.jQuery !==
+                                "undefined"
+                            &&
+                            !$(form).valid()
+                        ) {
+                            return;
+                        }
+
+
+                        sending = true;
+
+                        button.disabled = true;
+
+                        button.textContent =
+                            "Calculando ProtegeScore...";
+                    });
+
+
+                updateScore();
+
             });
-        });
+
     </script>
 }

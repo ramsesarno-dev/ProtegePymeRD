@@ -1,215 +1,556 @@
 ﻿@model IEnumerable<ProtegePymeRD.Models.Diagnostico>
 
-    @if (TempData["MensajeExito"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["MensajeExito"]
-    </div>
-}
-
 @{
     ViewData["Title"] = "Historial ProtegeScore";
 
     var empresa =
         ViewBag.Empresa as ProtegePymeRD.Models.Empresa;
 
-    var ultimoDiagnostico = Model.FirstOrDefault();
+    var evaluaciones = Model
+        .OrderByDescending(x => x.FechaEvaluacion)
+        .ToList();
+
+    var ultimaEvaluacion =
+        evaluaciones.FirstOrDefault();
+
+    var primeraEvaluacion =
+        evaluaciones.LastOrDefault();
+
+    bool tieneComparacion =
+        evaluaciones.Count >= 2;
+
+    int evolucion = 0;
+
+    if (tieneComparacion &&
+        ultimaEvaluacion != null &&
+        primeraEvaluacion != null)
+    {
+        evolucion =
+            ultimaEvaluacion.Puntuacion -
+            primeraEvaluacion.Puntuacion;
+    }
+
+    string ClaseScore(int score)
+    {
+        return score switch
+        {
+            >= 90 => "history-score-excellent",
+            >= 75 => "history-score-good",
+            >= 60 => "history-score-medium",
+            >= 40 => "history-score-low",
+            _ => "history-score-critical"
+        };
+    }
 }
 
-<div class="d-flex flex-column flex-md-row
-            justify-content-between align-items-md-end
-            gap-3 mb-4">
+
+@if (TempData["MensajeExito"] != null)
+{
+    <div class="app-notification app-notification-success">
+
+        <div class="notification-symbol">
+            ✓
+        </div>
+
+        <div>
+            <strong>
+                Operación completada
+            </strong>
+
+            <span>
+                @TempData["MensajeExito"]
+            </span>
+        </div>
+
+    </div>
+}
+
+
+<!-- ENCABEZADO -->
+
+<div class="history-header">
 
     <div>
-        <span class="text-success fw-semibold small">
+
+        <a asp-controller="Empresas"
+           asp-action="Details"
+           asp-route-id="@empresa?.Id"
+           class="history-back">
+
+            ← Volver a @empresa?.Nombre
+
+        </a>
+
+        <span class="page-eyebrow mt-3">
             EVOLUCIÓN DE SEGURIDAD
         </span>
 
-        <h1 class="fw-bold mt-2 mb-2">
+        <h1 class="page-title">
             Historial ProtegeScore
         </h1>
 
-        <p class="text-muted mb-0">
-            Empresa:
-            <strong class="text-dark">@empresa?.Nombre</strong>
+        <p class="page-description">
+            Consulta cómo ha evolucionado el nivel
+            de protección de
+            <strong class="text-dark">
+                @empresa?.Nombre
+            </strong>.
         </p>
+
     </div>
+
 
     <a asp-action="Create"
        asp-route-empresaId="@empresa?.Id"
-       class="btn btn-success px-4">
+       class="btn btn-primary px-4">
+
         Nueva evaluación
+
     </a>
+
 </div>
+
+
+<!-- MÉTRICAS -->
 
 <div class="row g-3 mb-4">
 
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body">
-                <p class="text-muted mb-2">
-                    ProtegeScore actual
-                </p>
 
-                @if (ultimoDiagnostico != null)
-                {
-                    <span class="display-6 fw-bold text-success">
-                        @ultimoDiagnostico.Puntuacion
+    <!-- SCORE ACTUAL -->
+
+    <div class="col-md-4">
+
+        <div class="history-stat-card">
+
+            <div class="history-stat-label">
+                ProtegeScore actual
+            </div>
+
+            @if (ultimaEvaluacion != null)
+            {
+                <div class="history-score-row">
+
+                    <span class="history-stat-value
+                                 @ClaseScore(
+                                     ultimaEvaluacion.Puntuacion)">
+
+                        @ultimaEvaluacion.Puntuacion
+
                     </span>
 
-                    <span class="text-muted">/ 100</span>
-                }
-                else
-                {
-                    <span class="display-6 fw-bold">--</span>
-                }
-            </div>
-        </div>
-    </div>
+                    <span class="history-stat-total">
+                        /100
+                    </span>
 
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body">
-                <p class="text-muted mb-2">
-                    Evaluaciones realizadas
-                </p>
+                </div>
 
-                <span class="display-6 fw-bold">
-                    @Model.Count()
+
+                <span class="history-level
+                             @ClaseScore(
+                                 ultimaEvaluacion.Puntuacion)">
+
+                    @ultimaEvaluacion.Nivel
+
                 </span>
-            </div>
+            }
+            else
+            {
+                <div class="history-stat-value">
+                    --
+                </div>
+
+                <span class="history-stat-description">
+                    Sin evaluación
+                </span>
+            }
+
         </div>
+
     </div>
 
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body">
-                <p class="text-muted mb-2">
-                    Última evaluación
-                </p>
 
-                @if (ultimoDiagnostico != null)
+    <!-- EVALUACIONES -->
+
+    <div class="col-md-4">
+
+        <div class="history-stat-card">
+
+            <div class="history-stat-label">
+                Evaluaciones realizadas
+            </div>
+
+            <div class="history-stat-value">
+                @evaluaciones.Count
+            </div>
+
+            <div class="history-stat-description">
+
+                @if (evaluaciones.Count == 1)
                 {
-                    <span class="fs-4 fw-bold">
-                        @(ultimoDiagnostico.FechaEvaluacion.ToString("dd/MM/yyyy"))
-                    </span>
+                    <text>
+                        Primera evaluación registrada
+                    </text>
                 }
                 else
                 {
-                    <span class="fs-4 fw-bold">Pendiente</span>
+                    <text>
+                        Diagnósticos completados
+                    </text>
                 }
+
             </div>
+
         </div>
+
+    </div>
+
+
+    <!-- EVOLUCIÓN -->
+
+    <div class="col-md-4">
+
+        <div class="history-stat-card">
+
+            <div class="history-stat-label">
+                Evolución
+            </div>
+
+            @if (tieneComparacion)
+            {
+                <div class="history-stat-value
+                            @(evolucion > 0
+                                ? "text-success"
+                                : evolucion < 0
+                                    ? "text-danger"
+                                    : "")">
+
+                    @(evolucion > 0
+                        ? $"+{evolucion}"
+                        : evolucion.ToString())
+
+                </div>
+
+                <div class="history-stat-description">
+
+                    @if (evolucion > 0)
+                    {
+                        <span class="text-success">
+                            Mejora desde la evaluación inicial
+                        </span>
+                    }
+                    else if (evolucion < 0)
+                    {
+                        <span class="text-danger">
+                            Disminución desde la evaluación inicial
+                        </span>
+                    }
+                    else
+                    {
+                        <span>
+                            Sin variación
+                        </span>
+                    }
+
+                </div>
+            }
+            else
+            {
+                <div class="history-stat-value">
+                    --
+                </div>
+
+                <div class="history-stat-description">
+                    Se necesitan al menos 2 evaluaciones
+                </div>
+            }
+
+        </div>
+
     </div>
 
 </div>
 
-<div class="card border-0 shadow-sm">
-    <div class="card-body p-4">
 
-        <h5 class="fw-bold mb-1">
-            Evaluaciones registradas
-        </h5>
+<!-- COMPARACIÓN -->
 
-        <p class="text-muted mb-4">
-            Consulta los resultados obtenidos durante el piloto.
-        </p>
+@if (tieneComparacion &&
+     primeraEvaluacion != null &&
+     ultimaEvaluacion != null)
+{
+    <div class="history-comparison mb-4">
 
-        @if (Model.Any())
-        {
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Puntuación</th>
-                            <th>Nivel</th>
-                            <th>Evaluado por</th>
-                            <th class="text-end">Acciones</th>
-                        </tr>
-                    </thead>
+        <div class="history-comparison-header">
 
-                    <tbody>
-                        @foreach (var diagnostico in Model)
-                        {
-                            string color =
-                                diagnostico.Puntuacion >= 80
-                                    ? "success"
-                                    : diagnostico.Puntuacion >= 60
-                                        ? "warning"
-                                        : "danger";
+            <div>
 
-                            <tr>
-                                <td>
-                                @(diagnostico.FechaEvaluacion.ToString("dd/MM/yyyy hh:mm tt"))
-                                </td>
+                <span class="panel-eyebrow">
+                    ANTES VS. AHORA
+                </span>
 
-                                <td>
-                                    <span class="fw-bold text-@color">
-                                        @diagnostico.Puntuacion
-                                    </span>
-                                    <span class="text-muted">/ 100</span>
-                                </td>
+                <h2>
+                    Evolución de la protección
+                </h2>
 
-                                <td>
-                                    <span class="badge bg-@color text-white">
-                                        @diagnostico.Nivel
-                                    </span>
-                                </td>
-
-                                <td>
-                                    @diagnostico.UsuarioEvaluador
-                                </td>
-
-                                <td class="text-end text-nowrap">
-                                   <a asp-action="Resultado"
-                                      asp-route-id="@diagnostico.Id"
-                                      class="btn btn-sm btn-outline-success">
-                                       Ver resultado
-                                   </a>
-                               
-                                   <form asp-action="Eliminar"
-                                         asp-route-id="@diagnostico.Id"
-                                         method="post"
-                                         class="d-inline"
-                                         onsubmit="return confirm('¿Seguro que deseas eliminar esta evaluación?');">
-                               
-                                       <button type="submit"
-                                               class="btn btn-sm btn-outline-danger">
-                                           Eliminar
-                                       </button>
-                                   </form>
-                               </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        }
-        else
-        {
-            <div class="text-center py-5">
-                <h5>No hay evaluaciones registradas</h5>
-
-                <p class="text-muted">
-                    Realiza el primer diagnóstico de esta empresa.
+                <p>
+                    Comparación entre el primer diagnóstico
+                    y la evaluación más reciente.
                 </p>
 
-                <a asp-action="Create"
-                   asp-route-empresaId="@empresa?.Id"
-                   class="btn btn-success">
-                    Iniciar diagnóstico
-                </a>
             </div>
-        }
+
+        </div>
+
+
+        <div class="history-comparison-body">
+
+            <div class="history-comparison-score">
+
+                <span>
+                    Evaluación inicial
+                </span>
+
+                <strong>
+                    @primeraEvaluacion.Puntuacion
+                </strong>
+
+                <small>
+                    /100
+                </small>
+
+            </div>
+
+
+            <div class="history-comparison-line">
+
+                <div class="comparison-arrow">
+                    →
+                </div>
+
+                <div class="comparison-change
+                            @(evolucion >= 0
+                                ? "text-success"
+                                : "text-danger")">
+
+                    @(evolucion > 0
+                        ? $"+{evolucion} puntos"
+                        : evolucion < 0
+                            ? $"{evolucion} puntos"
+                            : "Sin cambios")
+
+                </div>
+
+            </div>
+
+
+            <div class="history-comparison-score current">
+
+                <span>
+                    Estado actual
+                </span>
+
+                <strong>
+                    @ultimaEvaluacion.Puntuacion
+                </strong>
+
+                <small>
+                    /100
+                </small>
+
+            </div>
+
+        </div>
 
     </div>
-</div>
+}
 
-<div class="mt-4 mb-5">
-    <a asp-controller="Empresas"
-       asp-action="Index"
-       class="btn btn-light">
-        Volver a empresas
-    </a>
+
+<!-- HISTORIAL -->
+
+<div class="history-panel">
+
+    <div class="history-panel-header">
+
+        <div>
+
+            <span class="panel-eyebrow">
+                REGISTRO
+            </span>
+
+            <h2>
+                Evaluaciones realizadas
+            </h2>
+
+            <p>
+                Historial completo de diagnósticos
+                de seguridad de esta empresa.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    @if (evaluaciones.Any())
+    {
+        <div class="table-responsive">
+
+            <table class="table history-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Fecha</th>
+                        <th>ProtegeScore</th>
+                        <th>Nivel</th>
+                        <th>Evaluado por</th>
+                        <th class="text-end">
+                            Acciones
+                        </th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    @foreach (var diagnostico in evaluaciones)
+                    {
+                        <tr>
+
+                            <td>
+
+                                <div class="history-date">
+
+                                    <strong>
+                                        @(diagnostico.FechaEvaluacion
+                                            .ToString("dd/MM/yyyy"))
+                                    </strong>
+
+                                    <small>
+                                        @(diagnostico.FechaEvaluacion
+                                            .ToString("hh:mm tt"))
+                                    </small>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="history-table-score">
+
+                                    <strong class="@ClaseScore(
+                                        diagnostico.Puntuacion)">
+
+                                        @diagnostico.Puntuacion
+
+                                    </strong>
+
+                                    <span>
+                                        /100
+                                    </span>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="history-level-badge
+                                             @ClaseScore(
+                                                 diagnostico.Puntuacion)">
+
+                                    @diagnostico.Nivel
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="history-user">
+                                    @diagnostico.UsuarioEvaluador
+                                </span>
+
+                            </td>
+
+
+                            <td class="text-end">
+
+                                <div class="history-actions">
+
+                                    <a asp-action="Resultado"
+                                       asp-route-id="@diagnostico.Id"
+                                       class="btn btn-sm
+                                              btn-outline-primary">
+
+                                        Ver resultado
+
+                                    </a>
+
+
+                                    <form asp-action="Eliminar"
+                                          asp-route-id="@diagnostico.Id"
+                                          method="post"
+                                          class="d-inline"
+                                          onsubmit="return confirm(
+                                              '¿Seguro que deseas eliminar esta evaluación?');">
+
+                                        <button type="submit"
+                                                class="btn btn-sm
+                                                       btn-light
+                                                       text-danger
+                                                       border">
+
+                                            Eliminar
+
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+    }
+    else
+    {
+        <div class="companies-empty-state">
+
+            <div class="companies-empty-symbol">
+                PS
+            </div>
+
+            <h3>
+                No hay evaluaciones registradas
+            </h3>
+
+            <p>
+                Realiza el primer diagnóstico para
+                establecer la línea base de seguridad
+                de esta empresa.
+            </p>
+
+            <a asp-action="Create"
+               asp-route-empresaId="@empresa?.Id"
+               class="btn btn-primary mt-2">
+
+                Iniciar diagnóstico
+
+            </a>
+
+        </div>
+    }
+
 </div>

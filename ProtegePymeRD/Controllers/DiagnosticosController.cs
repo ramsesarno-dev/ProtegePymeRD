@@ -53,19 +53,18 @@ namespace ProtegePymeRD.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
-            [Bind(
-                "EmpresaId," +
-                "TieneInventarioActivos," +
-                "GestionaVulnerabilidades," +
-                "UtilizaMfa," +
-                "MantieneActualizaciones," +
-                "CapacitaEmpleados," +
-                "MonitoreaAlertas," +
-                "TienePlanIncidentes," +
-                "TieneResponsables," +
-                "RealizaRespaldos," +
-                "PruebaRestauraciones," +
-                "Observaciones")]
+           [Bind(
+           "EmpresaId," +
+           "TieneInventarioActivos," +
+           "UtilizaMfa," +
+           "RealizaRespaldos," +
+           "PruebaRestauraciones," +
+           "TieneProteccionEndpoint," +
+           "MantieneActualizaciones," +
+           "GestionaContrasenasAccesos," +
+           "CapacitaEmpleados," +
+           "TienePlanContinuidad," +
+           "Observaciones")]
             Diagnostico diagnostico)
         {
             var empresa = await _context.Empresas
@@ -193,27 +192,65 @@ namespace ProtegePymeRD.Controllers
                 new { empresaId });
         }
         private static int CalcularPuntuacion(
-            Diagnostico diagnostico)
+    Diagnostico diagnostico)
         {
-            bool?[] respuestas =
+            int puntuacion = 0;
+
+            // Inventario de activos
+            if (diagnostico.TieneInventarioActivos == true)
             {
-                diagnostico.TieneInventarioActivos,
-                diagnostico.GestionaVulnerabilidades,
-                diagnostico.UtilizaMfa,
-                diagnostico.MantieneActualizaciones,
-                diagnostico.CapacitaEmpleados,
-                diagnostico.MonitoreaAlertas,
-                diagnostico.TienePlanIncidentes,
-                diagnostico.TieneResponsables,
-                diagnostico.RealizaRespaldos,
-                diagnostico.PruebaRestauraciones
-            };
+                puntuacion += 5;
+            }
 
-            int respuestasPositivas =
-                respuestas.Count(respuesta =>
-                    respuesta == true);
+            // MFA en cuentas críticas
+            if (diagnostico.UtilizaMfa == true)
+            {
+                puntuacion += 15;
+            }
 
-            return respuestasPositivas * 10;
+            // Backups activos
+            if (diagnostico.RealizaRespaldos == true)
+            {
+                puntuacion += 15;
+            }
+
+            // Restauración comprobada
+            if (diagnostico.PruebaRestauraciones == true)
+            {
+                puntuacion += 15;
+            }
+
+            // Endpoint / antivirus
+            if (diagnostico.TieneProteccionEndpoint == true)
+            {
+                puntuacion += 10;
+            }
+
+            // Actualizaciones
+            if (diagnostico.MantieneActualizaciones == true)
+            {
+                puntuacion += 10;
+            }
+
+            // Contraseñas y accesos
+            if (diagnostico.GestionaContrasenasAccesos == true)
+            {
+                puntuacion += 10;
+            }
+
+            // Capacitación
+            if (diagnostico.CapacitaEmpleados == true)
+            {
+                puntuacion += 10;
+            }
+
+            // Plan de continuidad
+            if (diagnostico.TienePlanContinuidad == true)
+            {
+                puntuacion += 10;
+            }
+
+            return puntuacion;
         }
     }
 }

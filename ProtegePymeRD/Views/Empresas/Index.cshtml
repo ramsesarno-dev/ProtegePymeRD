@@ -5,424 +5,1011 @@
 
     bool esAdministrador =
         User.IsInRole("Administrador");
+
+    int totalEmpresas =
+        Convert.ToInt32(ViewBag.TotalEmpresas ?? 0);
+
+    int empresasActivas =
+        Convert.ToInt32(ViewBag.EmpresasActivas ?? 0);
+
+    int metaPiloto = 10;
+
+    int porcentajePiloto =
+        Math.Min(
+            (int)Math.Round(
+                totalEmpresas * 100.0 / metaPiloto),
+            100);
 }
+
+
+<!-- ======================================================
+     MENSAJES
+======================================================= -->
 
 @if (TempData["MensajeExito"] != null)
 {
-    <div class="alert alert-success">
-        @TempData["MensajeExito"]
+    <div class="app-notification app-notification-success">
+
+        <div class="notification-symbol">
+            ✓
+        </div>
+
+        <div>
+            <strong>
+                Operación completada
+            </strong>
+
+            <span>
+                @TempData["MensajeExito"]
+            </span>
+        </div>
+
     </div>
 }
+
 
 @if (TempData["MensajeAdvertencia"] != null)
 {
-    <div class="alert alert-warning">
-        @TempData["MensajeAdvertencia"]
+    <div class="app-notification app-notification-warning">
+
+        <div class="notification-symbol">
+            !
+        </div>
+
+        <div>
+            <strong>
+                Atención
+            </strong>
+
+            <span>
+                @TempData["MensajeAdvertencia"]
+            </span>
+        </div>
+
     </div>
 }
 
-<div class="d-flex flex-column flex-md-row
-            justify-content-between align-items-md-end
-            gap-3 mb-4">
+
+<!-- ======================================================
+     CABECERA
+======================================================= -->
+
+<div class="companies-header">
 
     <div>
-        <span class="text-success fw-semibold small">
+
+        <span class="page-eyebrow">
             CLIENTES PROTEGIDOS
         </span>
 
-        <h1 class="fw-bold mt-2 mb-2">
+        <h1 class="page-title">
             Empresas
         </h1>
 
-        <p class="text-muted mb-0">
-            Consulta y administra las MIPYMES incorporadas
-            a ProtegePyme RD.
+        <p class="page-description">
+            Administra las MIPYMES incorporadas y consulta
+            rápidamente su estado de protección.
         </p>
+
     </div>
+
 
     @if (esAdministrador)
     {
         <a asp-action="Create"
-           class="btn btn-success px-4">
-            Nueva empresa
+           class="btn btn-primary px-4">
+
+            <span class="me-1">
+                +
+            </span>
+
+            Registrar empresa
+
         </a>
     }
 
 </div>
 
+
+<!-- ======================================================
+     RESUMEN
+======================================================= -->
+
 <div class="row g-3 mb-4">
 
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body">
 
-                <p class="text-muted">
+    <!-- TOTAL -->
+
+    <div class="col-md-4">
+
+        <div class="company-summary-card">
+
+            <div class="company-summary-top">
+
+                <span class="summary-label">
                     Total de empresas
-                </p>
+                </span>
 
-                <span class="display-6 fw-bold">
-                    @ViewBag.TotalEmpresas
+                <span class="summary-symbol summary-symbol-blue">
+                    EM
                 </span>
 
             </div>
+
+            <div class="summary-value">
+                @totalEmpresas
+            </div>
+
+           <div class="summary-description">
+               MIPYMES incorporadas
+           </div>
+
         </div>
+
     </div>
 
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body">
 
-                <p class="text-muted">
+    <!-- ACTIVAS -->
+
+    <div class="col-md-4">
+
+        <div class="company-summary-card">
+
+            <div class="company-summary-top">
+
+                <span class="summary-label">
                     Empresas activas
-                </p>
+                </span>
 
-                <span class="display-6 fw-bold text-success">
-                    @ViewBag.EmpresasActivas
+                <span class="summary-symbol summary-symbol-green">
+                    ✓
                 </span>
 
             </div>
+
+            <div class="summary-value">
+                @empresasActivas
+            </div>
+
+            <div class="summary-description">
+
+                @if (totalEmpresas > 0)
+                {
+                    <span class="text-success fw-semibold">
+                        @Math.Round(
+                            empresasActivas * 100.0 /
+                            totalEmpresas)%
+                    </span>
+
+                    <span>
+                        de la cartera actual
+                    </span>
+                }
+                else
+                {
+                    <span>
+                        Sin empresas registradas
+                    </span>
+                }
+
+            </div>
+
         </div>
+
     </div>
 
+
+    <!-- PILOTO -->
+
     <div class="col-md-4">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body">
 
-                <p class="text-muted">
+        <div class="company-summary-card">
+
+            <div class="company-summary-top">
+
+                <span class="summary-label">
                     Meta del piloto
-                </p>
-
-                <span class="display-6 fw-bold">
-                    10
                 </span>
 
-                <span class="text-muted">
-                    empresas
+                <span class="summary-symbol summary-symbol-purple">
+                    90D
                 </span>
 
             </div>
+
+
+            <div class="d-flex align-items-end gap-1">
+
+                <span class="summary-value">
+                    @totalEmpresas
+                </span>
+
+                <span class="summary-total">
+                    / @metaPiloto
+                </span>
+
+            </div>
+
+
+            <div class="company-pilot-track">
+
+                <div class="company-pilot-progress"
+                     style="width: @porcentajePiloto%">
+                </div>
+
+            </div>
+
+
+            <div class="summary-description mt-2">
+
+                @if (totalEmpresas >= metaPiloto)
+                {
+                    <span class="text-success fw-semibold">
+                        Meta alcanzada
+                    </span>
+                }
+                else
+                {
+                    <span>
+                        Faltan
+                        <strong>
+                            @(metaPiloto - totalEmpresas)
+                        </strong>
+                        empresas
+                    </span>
+                }
+
+            </div>
+
         </div>
+
     </div>
 
 </div>
 
-<div class="card border-0 shadow-sm">
-    <div class="card-body p-4">
+
+<!-- ======================================================
+     CONTENEDOR PRINCIPAL
+======================================================= -->
+
+<div class="companies-panel">
+
+
+    <!-- BÚSQUEDA -->
+
+    <div class="companies-toolbar">
+
+        <div>
+
+            <h2 class="companies-panel-title">
+                Directorio de empresas
+            </h2>
+
+            <p class="companies-panel-subtitle">
+                Consulta el estado y accede a los servicios
+                de cada cliente.
+            </p>
+
+        </div>
+
 
         <form method="get"
-              class="row g-2 mb-4">
+              class="companies-search">
 
-            <div class="col-md-7">
+            <div class="company-search-box">
+
+                <span class="search-symbol">
+                    ⌕
+                </span>
+
                 <input type="search"
                        name="buscar"
                        value="@ViewBag.Buscar"
-                       class="form-control"
-                       placeholder="Buscar por nombre, RNC o sector" />
+                       class="company-search-input"
+                       placeholder="Buscar por nombre, RNC o sector..." />
+
             </div>
 
-            <div class="col-auto">
-                <button class="btn btn-dark"
-                        type="submit">
-                    Buscar
-                </button>
-            </div>
 
-            <div class="col-auto">
+            <button class="btn btn-primary"
+                    type="submit">
+
+                Buscar
+
+            </button>
+
+
+            @if (!string.IsNullOrWhiteSpace(
+                    Convert.ToString(ViewBag.Buscar)))
+            {
                 <a asp-action="Index"
-                   class="btn btn-outline-secondary">
+                   class="btn btn-light border">
+
                     Limpiar
+
                 </a>
-            </div>
+            }
 
         </form>
 
-        @if (Model.Any())
-        {
-            <div class="table-responsive empresas-table">
-                <table class="table table-hover align-middle">
+    </div>
 
-                    <thead class="table-light">
-                        <tr>
-                            <th>Empresa</th>
-                            <th>RNC o cédula</th>
-                            <th>Plan</th>
-                            <th>ProtegeScore</th>
-                            <th>Estado</th>
-                            <th>Incorporación</th>
-                            <th class="text-end">
-                                Acciones
-                            </th>
-                        </tr>
-                    </thead>
 
-                    <tbody>
+    <!-- RESULTADOS -->
 
-                        @foreach (var empresa in Model)
+    @if (Model.Any())
+    {
+        <div class="table-responsive empresas-table">
+
+            <table class="table companies-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Empresa
+                        </th>
+
+                        <th>
+                            Identificación
+                        </th>
+
+                        <th>
+                            Plan
+                        </th>
+
+                        <th>
+                            ProtegeScore
+                        </th>
+
+                        <th>
+                            Estado
+                        </th>
+
+                        <th>
+                            Incorporación
+                        </th>
+
+                        <th class="text-end">
+                            Acciones
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    @foreach (var empresa in Model)
+                    {
+                        var inicial =
+                            !string.IsNullOrWhiteSpace(empresa.Nombre)
+                                ? empresa.Nombre
+                                    .Substring(0, 1)
+                                    .ToUpper()
+                                : "E";
+
+                        string scoreNombre;
+
+                        string scoreClase;
+
+                        if (empresa.ProtegeScore >= 90)
                         {
-                            <tr>
-                                <td>
-                                    <strong>
-                                        @empresa.Nombre
-                                    </strong>
+                            scoreNombre = "Excelente";
+                            scoreClase = "company-score-excellent";
+                        }
+                        else if (empresa.ProtegeScore >= 75)
+                        {
+                            scoreNombre = "Bueno";
+                            scoreClase = "company-score-good";
+                        }
+                        else if (empresa.ProtegeScore >= 60)
+                        {
+                            scoreNombre = "Moderado";
+                            scoreClase = "company-score-medium";
+                        }
+                        else if (empresa.ProtegeScore >= 40)
+                        {
+                            scoreNombre = "Bajo";
+                            scoreClase = "company-score-low";
+                        }
+                        else if (empresa.ProtegeScore > 0)
+                        {
+                            scoreNombre = "Crítico";
+                            scoreClase = "company-score-critical";
+                        }
+                        else
+                        {
+                            scoreNombre = "Pendiente";
+                            scoreClase = "company-score-pending";
+                        }
 
-                                    <div class="text-muted small">
-                                        @empresa.Sector ·
-                                        @empresa.CantidadEmpleados
-                                        empleados
+
+                        <tr>
+
+
+                            <!-- EMPRESA -->
+
+                            <td>
+
+                                <div class="company-info-cell">
+
+                                    <div class="company-list-avatar">
+                                        @inicial
                                     </div>
-                                </td>
 
-                                <td>
-                                    @empresa.Rnc
-                                </td>
 
-                                <td>
-                                    <span class="badge
-                                                         bg-light
-                                                         text-dark
-                                                         border">
-                                        @empresa.Plan
-                                    </span>
-                                </td>
-
-                                <td>
-                                    @if (empresa.ProtegeScore == 0)
-                                    {
-                                        <span class="badge
-                                                                 bg-secondary
-                                                                 text-white">
-                                            Pendiente
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <strong>
-                                            @empresa.ProtegeScore / 100
-                                        </strong>
-                                    }
-                                </td>
-
-                                <td>
-                                    @if (empresa.Activa)
-                                    {
-                                        <span class="text-success
-                                                                 fw-semibold">
-                                            Activa
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="text-muted">
-                                            Inactiva
-                                        </span>
-                                    }
-                                </td>
-
-                                <td>
-                                    @(empresa.FechaRegistro.ToString("dd/MM/yyyy"))
-                                </td>
-
-                                <td class="text-end text-nowrap"
-                                    style="min-width: 285px;">
-
-                                    <div class="d-flex
-                                                        justify-content-end
-                                                        gap-1">
+                                    <div>
 
                                         <a asp-action="Details"
                                            asp-route-id="@empresa.Id"
-                                           class="btn btn-sm
-                                                          btn-outline-dark">
-                                            Ver
+                                           class="company-list-name">
+
+                                            @empresa.Nombre
+
                                         </a>
 
+
+                                        <div class="company-list-meta">
+
+                                            <span>
+                                                @empresa.Sector
+                                            </span>
+
+                                            <span class="meta-dot">
+                                                •
+                                            </span>
+
+                                            <span>
+                                                @empresa.CantidadEmpleados
+                                                @(empresa.CantidadEmpleados == 1
+                                                    ? "empleado"
+                                                    : "empleados")
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- RNC -->
+
+                            <td>
+
+                                <span class="company-document">
+                                    @empresa.Rnc
+                                </span>
+
+                            </td>
+
+
+                            <!-- PLAN -->
+
+                            <td>
+
+                                <span class="company-plan-badge">
+                                    @empresa.Plan
+                                </span>
+
+                            </td>
+
+
+                            <!-- PROTEGESCORE -->
+
+                            <td>
+
+                                @if (empresa.ProtegeScore == 0)
+                                {
+                                    <div class="company-score-container">
+
+                                        <span class="company-score-badge
+                                                     @scoreClase">
+
+                                            Pendiente
+
+                                        </span>
+
+
+                                        <small>
+                                            Sin diagnóstico
+                                        </small>
+
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="company-score-container">
+
+                                        <div class="company-score-value">
+
+                                            @empresa.ProtegeScore
+
+                                            <small>
+                                                /100
+                                            </small>
+
+                                        </div>
+
+
+                                        <span class="company-score-label
+                                                     @scoreClase">
+
+                                            @scoreNombre
+
+                                        </span>
+
+                                    </div>
+                                }
+
+                            </td>
+
+
+                            <!-- ESTADO -->
+
+                            <td>
+
+                                @if (empresa.Activa)
+                                {
+                                    <span class="company-status company-status-active">
+
+                                        <span class="company-status-dot">
+                                        </span>
+
+                                        Activa
+
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="company-status company-status-inactive">
+
+                                        <span class="company-status-dot">
+                                        </span>
+
+                                        Inactiva
+
+                                    </span>
+                                }
+
+                            </td>
+
+
+                            <!-- FECHA -->
+
+                            <td>
+
+                                <span class="company-date">
+
+                                   @(empresa.FechaRegistro.ToString("dd MMM yyyy"))
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- ACCIONES -->
+
+                            <td class="text-end">
+
+                                <div class="company-actions">
+
+
+                                    <!-- VER EMPRESA -->
+
+                                    <a asp-action="Details"
+                                       asp-route-id="@empresa.Id"
+                                       class="btn btn-sm
+                                              btn-outline-primary
+                                              company-view-button">
+
+                                        Ver empresa
+
+                                    </a>
+
+
+                                    <!-- SERVICIOS -->
+
+                                    <div class="dropdown">
+
+                                        <button type="button"
+                                                class="btn btn-sm
+                                                       btn-light
+                                                       border
+                                                       dropdown-toggle"
+                                                data-bs-toggle="dropdown"
+                                                aria-expanded="false">
+
+                                            Servicios
+
+                                        </button>
+
+
+                                        <ul class="dropdown-menu
+                                                   dropdown-menu-end
+                                                   company-dropdown">
+
+
+                                            <!-- PROTECCIÓN -->
+
+                                            <li>
+
+                                                <div class="company-dropdown-header">
+
+                                                    PROTECCIÓN
+
+                                                </div>
+
+                                            </li>
+
+
+                                            <li>
+
+                                                <a asp-controller="CuentasCriticas"
+                                                   asp-action="Index"
+                                                   asp-route-empresaId="@empresa.Id"
+                                                   class="dropdown-item
+                                                          company-service-item">
+
+                                                    <span class="service-dot service-access">
+                                                    </span>
+
+                                                    <div>
+
+                                                        <strong>
+                                                            ProtegeAccess
+                                                        </strong>
+
+                                                        <small>
+                                                            MFA y accesos
+                                                        </small>
+
+                                                    </div>
+
+                                                </a>
+
+                                            </li>
+
+
+                                            <li>
+
+                                                <a asp-controller="AlertasSeguridad"
+                                                   asp-action="Index"
+                                                   asp-route-empresaId="@empresa.Id"
+                                                   class="dropdown-item
+                                                          company-service-item">
+
+                                                    <span class="service-dot service-alert">
+                                                    </span>
+
+                                                    <div>
+
+                                                        <strong>
+                                                            ProtegeAlert
+                                                        </strong>
+
+                                                        <small>
+                                                            Riesgos y alertas
+                                                        </small>
+
+                                                    </div>
+
+                                                </a>
+
+                                            </li>
+
+
+                                            <li>
+
+                                                <a asp-controller="CapacitacionesSeguridad"
+                                                   asp-action="Index"
+                                                   asp-route-empresaId="@empresa.Id"
+                                                   class="dropdown-item
+                                                          company-service-item">
+
+                                                    <span class="service-dot service-human">
+                                                    </span>
+
+                                                    <div>
+
+                                                        <strong>
+                                                            ProtegeHuman
+                                                        </strong>
+
+                                                        <small>
+                                                            Capacitación
+                                                        </small>
+
+                                                    </div>
+
+                                                </a>
+
+                                            </li>
+
+
+                                            <li>
+                                                <hr class="dropdown-divider" />
+                                            </li>
+
+
+                                            <!-- EVALUACIÓN -->
+
+                                            <li>
+
+                                                <div class="company-dropdown-header">
+                                                    EVALUACIÓN
+                                                </div>
+
+                                            </li>
+
+
+                                            <li>
+
+                                                <a asp-controller="Diagnosticos"
+                                                   asp-action="Create"
+                                                   asp-route-empresaId="@empresa.Id"
+                                                   class="dropdown-item
+                                                          company-service-item">
+
+                                                    <span class="service-dot service-score">
+                                                    </span>
+
+                                                    <div>
+
+                                                        <strong>
+                                                            Nuevo diagnóstico
+                                                        </strong>
+
+                                                        <small>
+                                                            Evaluar protección
+                                                        </small>
+
+                                                    </div>
+
+                                                </a>
+
+                                            </li>
+
+
+                                            <li>
+
+                                                <a asp-controller="Diagnosticos"
+                                                   asp-action="Historial"
+                                                   asp-route-empresaId="@empresa.Id"
+                                                   class="dropdown-item
+                                                          company-service-item">
+
+                                                    <span class="service-dot service-history">
+                                                    </span>
+
+                                                    <div>
+
+                                                        <strong>
+                                                            Historial ProtegeScore
+                                                        </strong>
+
+                                                        <small>
+                                                            Ver evolución
+                                                        </small>
+
+                                                    </div>
+
+                                                </a>
+
+                                            </li>
+
+
+                                            <li>
+                                                <hr class="dropdown-divider" />
+                                            </li>
+
+
+                                            <!-- RECUPERACIÓN -->
+
+                                            <li>
+
+                                                <div class="company-dropdown-header">
+                                                    RECUPERACIÓN
+                                                </div>
+
+                                            </li>
+
+
+                                            <li>
+
+                                                <a asp-controller="Respaldos"
+                                                   asp-action="Index"
+                                                   asp-route-empresaId="@empresa.Id"
+                                                   class="dropdown-item
+                                                          company-service-item">
+
+                                                    <span class="service-dot service-backup">
+                                                    </span>
+
+                                                    <div>
+
+                                                        <strong>
+                                                            ProtegeBackup
+                                                        </strong>
+
+                                                        <small>
+                                                            Respaldos y restauración
+                                                        </small>
+
+                                                    </div>
+
+                                                </a>
+
+                                            </li>
+
+
+                                            <li>
+
+                                                <a asp-controller="PlanesContinuidad"
+                                                   asp-action="Index"
+                                                   asp-route-empresaId="@empresa.Id"
+                                                   class="dropdown-item
+                                                          company-service-item">
+
+                                                    <span class="service-dot service-continuity">
+                                                    </span>
+
+                                                    <div>
+
+                                                        <strong>
+                                                            Continuidad
+                                                        </strong>
+
+                                                        <small>
+                                                            RPO, RTO y recuperación
+                                                        </small>
+
+                                                    </div>
+
+                                                </a>
+
+                                            </li>
+
+                                        </ul>
+
+                                    </div>
+
+
+                                    <!-- ADMINISTRAR -->
+
+                                    @if (esAdministrador)
+                                    {
                                         <div class="dropdown">
 
                                             <button type="button"
                                                     class="btn btn-sm
-                                                                   btn-outline-success
-                                                                   dropdown-toggle"
+                                                           company-more-button"
                                                     data-bs-toggle="dropdown"
-                                                    aria-expanded="false">
-                                                Servicios
+                                                    aria-expanded="false"
+                                                    aria-label="Más opciones">
+
+                                                •••
+
                                             </button>
 
+
                                             <ul class="dropdown-menu
-                                                               dropdown-menu-end
-                                                               shadow">
+                                                       dropdown-menu-end
+                                                       company-admin-menu">
+
 
                                                 <li>
-                                                    <h6 class="dropdown-header">
-                                                        Seguridad y acceso
-                                                    </h6>
-                                                </li>
 
-                                                <li>
-                                                    <a asp-controller="CuentasCriticas"
-                                                       asp-action="Index"
-                                                       asp-route-empresaId="@empresa.Id"
+                                                    <a asp-action="Edit"
+                                                       asp-route-id="@empresa.Id"
                                                        class="dropdown-item">
-                                                        ProtegeAccess
+
+                                                        Editar empresa
+
                                                     </a>
+
                                                 </li>
 
-                                                <li>
-                                                    <a asp-controller="AlertasSeguridad"
-                                                       asp-action="Index"
-                                                       asp-route-empresaId="@empresa.Id"
-                                                       class="dropdown-item">
-                                                        ProtegeAlert
-                                                    </a>
-                                                </li>
-
-                                                <li>
-                                                    <a asp-controller="CapacitacionesSeguridad"
-                                                       asp-action="Index"
-                                                       asp-route-empresaId="@empresa.Id"
-                                                       class="dropdown-item">
-                                                        ProtegeHuman
-                                                    </a>
-                                                </li>
 
                                                 <li>
                                                     <hr class="dropdown-divider" />
                                                 </li>
 
-                                                <li>
-                                                    <h6 class="dropdown-header">
-                                                        Evaluación
-                                                    </h6>
-                                                </li>
 
                                                 <li>
-                                                    <a asp-controller="Diagnosticos"
-                                                       asp-action="Create"
-                                                       asp-route-empresaId="@empresa.Id"
-                                                       class="dropdown-item">
-                                                        Nuevo diagnóstico
+
+                                                    <a asp-action="Delete"
+                                                       asp-route-id="@empresa.Id"
+                                                       class="dropdown-item
+                                                              text-danger">
+
+                                                        Eliminar empresa
+
                                                     </a>
-                                                </li>
 
-                                                <li>
-                                                    <a asp-controller="Diagnosticos"
-                                                       asp-action="Historial"
-                                                       asp-route-empresaId="@empresa.Id"
-                                                       class="dropdown-item">
-                                                        Historial ProtegeScore
-                                                    </a>
-                                                </li>
-
-                                                <li>
-                                                    <hr class="dropdown-divider" />
-                                                </li>
-
-                                                <li>
-                                                    <h6 class="dropdown-header">
-                                                        Recuperación
-                                                    </h6>
-                                                </li>
-
-                                                <li>
-                                                    <a asp-controller="Respaldos"
-                                                       asp-action="Index"
-                                                       asp-route-empresaId="@empresa.Id"
-                                                       class="dropdown-item">
-                                                        ProtegeBackup
-                                                    </a>
-                                                </li>
-
-                                                <li>
-                                                    <a asp-controller="PlanesContinuidad"
-                                                       asp-action="Index"
-                                                       asp-route-empresaId="@empresa.Id"
-                                                       class="dropdown-item">
-                                                        Plan de continuidad
-                                                    </a>
                                                 </li>
 
                                             </ul>
+
                                         </div>
+                                    }
 
-                                        @if (esAdministrador)
-                                        {
-                                            <div class="dropdown">
+                                </div>
 
-                                                <button type="button"
-                                                        class="btn btn-sm
-                                                                           btn-outline-secondary
-                                                                           dropdown-toggle"
-                                                        data-bs-toggle="dropdown"
-                                                        aria-expanded="false">
-                                                    Administrar
-                                                </button>
+                            </td>
 
-                                                <ul class="dropdown-menu
-                                                                       dropdown-menu-end
-                                                                       shadow">
+                        </tr>
+                    }
 
-                                                    <li>
-                                                        <a asp-action="Edit"
-                                                           asp-route-id="@empresa.Id"
-                                                           class="dropdown-item">
-                                                            Editar empresa
-                                                        </a>
-                                                    </li>
+                </tbody>
 
-                                                    <li>
-                                                        <a asp-action="Delete"
-                                                           asp-route-id="@empresa.Id"
-                                                           class="dropdown-item
-                                                                              text-danger">
-                                                            Eliminar empresa
-                                                        </a>
-                                                    </li>
+            </table>
 
-                                                </ul>
-                                            </div>
-                                        }
+        </div>
+    }
+    else
+    {
+        <!-- ==================================================
+             EMPTY STATE
+        =================================================== -->
 
-                                    </div>
+        <div class="companies-empty-state">
 
-                                </td>
-                            </tr>
-                        }
-
-                    </tbody>
-
-                </table>
+            <div class="companies-empty-symbol">
+                P
             </div>
-        }
-        else
-        {
-            <div class="text-center py-5">
 
-                <h5>
-                    No hay empresas registradas
-                </h5>
+            @if (!string.IsNullOrWhiteSpace(
+                    Convert.ToString(ViewBag.Buscar)))
+            {
+                <h3>
+                    No encontramos resultados
+                </h3>
 
-                <p class="text-muted">
-                    No se encontraron empresas con los
-                    criterios indicados.
+                <p>
+                    No existen empresas que coincidan
+                    con la búsqueda
+                    <strong>
+                        "@ViewBag.Buscar"
+                    </strong>.
+                </p>
+
+                <a asp-action="Index"
+                   class="btn btn-light border mt-2">
+
+                    Limpiar búsqueda
+
+                </a>
+            }
+            else
+            {
+                <h3>
+                    Registra la primera empresa
+                </h3>
+
+                <p>
+                    Incorpora una MIPYME para comenzar
+                    a medir y administrar su nivel
+                    de protección.
                 </p>
 
                 @if (esAdministrador)
                 {
                     <a asp-action="Create"
-                       class="btn btn-success mt-2">
+                       class="btn btn-primary mt-2 px-4">
+
                         Registrar empresa
+
                     </a>
                 }
+            }
 
-            </div>
-        }
-
-    </div>
-</div>
-
-<style>
-    @@media (min-width: 992px) {
-        .empresas-table {
-            overflow: visible;
-        }
+        </div>
     }
-</style>
+
+</div>
