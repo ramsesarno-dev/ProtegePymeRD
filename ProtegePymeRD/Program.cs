@@ -84,51 +84,71 @@ using (var scope = app.Services.CreateScope())
         }
     }
 
-    const string correoAdministrador =
-        "admin@protegepyme.com";
+    var correoAdministrador =
+    builder.Configuration["AdminUser:Email"];
+
+    var claveAdministrador =
+        builder.Configuration["AdminUser:Password"];
+
+    if (string.IsNullOrWhiteSpace(correoAdministrador) ||
+        string.IsNullOrWhiteSpace(claveAdministrador))
+    {
+        throw new InvalidOperationException(
+            "No se configuraron las credenciales del administrador.");
+    }
 
     var usuarioAdministrador =
-        await userManager.FindByEmailAsync(
-            correoAdministrador);
+        await userManager.FindByEmailAsync(correoAdministrador);
 
-    if (usuarioAdministrador != null)
+    if (usuarioAdministrador == null)
     {
-        bool yaEsAdministrador =
-            await userManager.IsInRoleAsync(
+        usuarioAdministrador = new IdentityUser
+        {
+            UserName = correoAdministrador,
+            Email = correoAdministrador,
+            EmailConfirmed = true
+        };
+
+        var resultadoCreacion =
+            await userManager.CreateAsync(
+                usuarioAdministrador,
+                claveAdministrador);
+
+        if (!resultadoCreacion.Succeeded)
+        {
+            var errores = string.Join(
+                ", ",
+                resultadoCreacion.Errors.Select(e => e.Description));
+
+            throw new InvalidOperationException(
+                $"No se pudo crear el administrador: {errores}");
+        }
+    }
+
+    if (!await userManager.IsInRoleAsync(
+            usuarioAdministrador,
+            "Administrador"))
+    {
+        var resultadoRol =
+            await userManager.AddToRoleAsync(
                 usuarioAdministrador,
                 "Administrador");
 
-        if (!yaEsAdministrador)
+        if (!resultadoRol.Succeeded)
         {
-            var resultadoAsignacion =
-                await userManager.AddToRoleAsync(
-                    usuarioAdministrador,
-                    "Administrador");
+            var errores = string.Join(
+                ", ",
+                resultadoRol.Errors.Select(e => e.Description));
 
-            if (!resultadoAsignacion.Succeeded)
-            {
-                string errores = string.Join(
-                    ", ",
-                    resultadoAsignacion.Errors.Select(error =>
-                        error.Description));
-
-                throw new InvalidOperationException(
-                    "No se pudo asignar el rol " +
-                    $"Administrador: {errores}");
-            }
+            throw new InvalidOperationException(
+                $"No se pudo asignar el rol: {errores}");
         }
     }
-    else
-    {
-        Console.WriteLine(
-            "No se encontr� el usuario " +
-            $"{correoAdministrador}. " +
-            "El rol se asignar� cuando el usuario exista.");
-    }
+
 }
 
-// Configuraci�n del pipeline HTTP
-if (app.Environment.IsDevelopment())
+    // Configuraci�n del pipeline HTTP
+    if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
 }
